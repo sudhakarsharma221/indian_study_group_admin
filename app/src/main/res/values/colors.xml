@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#C0C0C0</color>
+    <color name="blue">#6B82FC</color>
+    <color name="bluedark">#5B74FB</color>
+    <color name="red">#FB5C5C</color>
+    <color name="green">#3EBF43</color>
+
+    <color name="signinbackground">#2f3133</color>
+    <color name="textViewColor">#DDDCDC</color>
+</resources>
