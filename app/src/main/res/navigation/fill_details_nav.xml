@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fill_details_nav"
+    app:startDestination="@id/detailsFillFragment">
+
+    <fragment
+        android:id="@+id/detailsFillFragment"
+        android:name="com.indiastudygroupadmin.fillDetails.screens.DetailsFillFragment"
+        android:label="fragment_details_fill"
+        tools:layout="@layout/fragment_details_fill">
+        <action
+            android:id="@+id/action_detailsFillFragment_to_photoFillFragment"
+            app:destination="@id/photoFillFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/photoFillFragment"
+        android:name="com.indiastudygroupadmin.fillDetails.screens.PhotoFillFragment"
+        android:label="fragment_photo_fill"
+        tools:layout="@layout/fragment_photo_fill">
+
+        <argument
+            android:name="name"
+            app:argType="string" />
+        <argument
+            android:name="pincode"
+            app:argType="string" />
+        <argument
+            android:name="city"
+            app:argType="string" />
+        <argument
+            android:name="state"
+            app:argType="string" />
+        <argument
+            android:name="bio"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_photoFillFragment_to_detailsFillFragment"
+            app:destination="@id/detailsFillFragment" />
+        <action
+            android:id="@+id/action_photoFillFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.indiastudygroupadmin.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+</navigation>

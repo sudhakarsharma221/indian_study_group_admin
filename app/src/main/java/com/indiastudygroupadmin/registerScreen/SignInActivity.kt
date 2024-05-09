@@ -7,13 +7,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import com.indiastudygroupadmin.MainActivity
+import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivitySignInBinding
+import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
@@ -57,27 +60,22 @@ class SignInActivity : AppCompatActivity() {
                 callGetUserExistApi(phoneNo)
             }
         }
-
     }
 
-
     private fun callGetUserExistApi(contact: String?) {
-        viewModel.callUserExists(contact)
+        viewModel.callUserExists(contact, "")
     }
 
     private fun observerUserExistsApiResponse() {
         viewModel.userExistResponse.observe(this, Observer {
-            if (it.userExist == true) {
-                if (it.user?.authType == "library owner") {
+            if (it.contactExist == true) {
+                if (it.authType == "library owner") {
                     val intent = Intent(this, OtpActivity::class.java)
                     intent.putExtra("phoneNumber", phoneNo)
                     startActivity(intent)
                     finish()
                 } else {
-                    ToastUtil.makeToast(
-                        this,
-                        "You have an account on student profile. PLease login on that application"
-                    )
+                    showErrorBottomDialog("You have an account on student profile. PLease login on that application.")
                 }
             } else {
                 ToastUtil.makeToast(this, "User does not exist, please sign up")
@@ -87,6 +85,20 @@ class SignInActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun showErrorBottomDialog(message: String) {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(true)
+        bottomDialog.show()
+        dialogBinding.messageTv.text = message
+        dialogBinding.continueButton.setOnClickListener {
+            HideKeyboard.hideKeyboard(this, binding.phoneEt.windowToken)
+            bottomDialog.dismiss()
+        }
+    }
+
 
     private fun observeProgress() {
         viewModel.showProgress.observe(this, Observer {

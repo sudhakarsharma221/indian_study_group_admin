@@ -8,6 +8,10 @@ import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserExistResponseModel
 import com.indiastudygroupadmin.userDetailsApi.repository.UserDetailsRepository
 
+object UserDetailData {
+    var userDetailsResponseModel: UserDetailsResponseModel? = null
+}
+
 class UserDetailsViewModel : ViewModel() {
     var showProgress = MutableLiveData<Boolean>()
     var errorMessage = MutableLiveData<String>()
@@ -30,11 +34,22 @@ class UserDetailsViewModel : ViewModel() {
         repository.postUserDetailsResponse(postUserDetailsPostRequestBodyModel)
     }
 
-    fun callPutUserDetails(userId: String?,putUserDetailsPostRequestBodyModel: UserDetailsPutRequestBodyModel?) {
-        repository.putUserDetailsResponse(userId,putUserDetailsPostRequestBodyModel)
+    fun callPutUserDetails(
+        userId: String?, putUserDetailsPostRequestBodyModel: UserDetailsPutRequestBodyModel?
+    ) {
+        repository.putUserDetailsResponse(userId, putUserDetailsPostRequestBodyModel)
     }
 
-    fun callUserExists(contact: String?) {
-        repository.getUserExist(contact)
+    fun callUserExists(contact: String?, userName: String?) {
+        repository.getUserExist(contact, userName)
     }
+
+    fun setUserDetailsResponse(response: UserDetailsResponseModel) {
+        UserDetailData.userDetailsResponseModel = response
+    }
+
+    fun getUserDetailsResponse(): UserDetailsResponseModel? {
+        return UserDetailData.userDetailsResponseModel
+    }
+
 }

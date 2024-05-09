@@ -1,8 +1,8 @@
 package com.indiastudygroupadmin
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -10,10 +10,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.indiastudygroupadmin.addLibrary.ui.AddLibraryActivity
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityMainBinding
-import com.indiastudygroupadmin.registerScreen.FillUserDetailsActivity
 import com.indiastudygroupadmin.registerScreen.SignInActivity
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 
@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        window.statusBarColor = Color.WHITE
+
         viewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
@@ -43,36 +45,8 @@ class MainActivity : AppCompatActivity() {
 //        )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-//        callGetUserDetailsApi(auth.currentUser!!.uid)
-//        observeProgress()
-//        observerErrorMessageApiResponse()
-//        observerUserDetailsApiResponse()
+        binding.addLibrary.setOnClickListener {
+            IntentUtil.startIntent(this, AddLibraryActivity())
+        }
     }
-
-    private fun callGetUserDetailsApi(userId: String?) {
-        viewModel.callGetUserDetails(userId)
-    }
-
-//    private fun observerUserDetailsApiResponse() {
-//        viewModel.userDetailsResponse.observe(this, Observer {
-//            Log.d("RESPONSEDONEMAINACTIVITY", it.toString())
-//        })
-//    }
-
-    private fun observeProgress() {
-        viewModel.showProgress.observe(this, Observer {
-            if (it) {
-                binding.progressBar.visibility = View.VISIBLE
-            } else {
-                binding.progressBar.visibility = View.GONE
-            }
-        })
-    }
-
-    private fun observerErrorMessageApiResponse() {
-        viewModel.errorMessage.observe(this, Observer {
-            ToastUtil.makeToast(this, it)
-        })
-    }
-
 }

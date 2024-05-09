@@ -12,6 +12,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface UserDetailsService {
     @GET(AppUrlsEndpoint.USERS_DETAILS)
@@ -31,6 +32,6 @@ interface UserDetailsService {
 
     @GET("api/users/{contact_number}")
     fun callGetUserExist(
-        @Path("contact_number") phoneNo: String?
+        @Path("contact_number") phoneNo: String?, @Query("userName") userName: String?
     ): Call<UserExistResponseModel>
 }

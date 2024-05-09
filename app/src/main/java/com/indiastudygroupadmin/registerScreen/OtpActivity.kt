@@ -21,6 +21,7 @@ import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityOtpBinding
+import com.indiastudygroupadmin.fillDetails.FillUserDetailsActivity
 import java.util.concurrent.TimeUnit
 
 class OtpActivity : AppCompatActivity() {
@@ -37,6 +38,7 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var credential: PhoneAuthCredential
     private var fromSignUp: Boolean? = true
     private lateinit var phoneNo: String
+    private lateinit var userName: String
     private lateinit var togoPhoneNo: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +65,7 @@ class OtpActivity : AppCompatActivity() {
         progressDialog.show()
 
         phoneNo = "+91" + intent.getStringExtra("phoneNumber")
+        userName = intent.getStringExtra("userName").toString()
         togoPhoneNo = intent.getStringExtra("phoneNumber").toString()
         fromSignUp = intent.getBooleanExtra("fromSignUp", false)
 
@@ -94,7 +97,8 @@ class OtpActivity : AppCompatActivity() {
                         verification: String, token: PhoneAuthProvider.ForceResendingToken
                     ) {
                         super.onCodeSent(verification, token)
-                        binding.phoneNo.text = "Enter the OTP sent to \n $shortPhoneNo******"
+                        binding.phoneNo.text =
+                            "We’ve send you the verification code on \n $shortPhoneNo******"
                         progressDialog.dismiss()
                         startCountdownTimer()
                         verificationId = verification
@@ -113,7 +117,7 @@ class OtpActivity : AppCompatActivity() {
 
             progressDialog.show()
 
-            binding.resendButton.isEnabled = false
+            binding.resendButton.visibility = View.GONE
             if (!verificationInProgress) { // Check if verification is not already in progress
                 // Resend verification code
                 val options = PhoneAuthOptions.newBuilder(auth)
@@ -222,7 +226,7 @@ class OtpActivity : AppCompatActivity() {
                     Log.d("USERIDFROMSIGNUP", auth.currentUser!!.uid)
                     callPostUserDetailsApi(
                         UserDetailsPostRequestBodyModel(
-                            auth.currentUser!!.uid, togoPhoneNo, "library owner"
+                            auth.currentUser!!.uid, togoPhoneNo, "library owner", "library owner",userName
                         )
                     )
                     IntentUtil.startIntent(this@OtpActivity, FillUserDetailsActivity())
@@ -255,12 +259,12 @@ class OtpActivity : AppCompatActivity() {
                 // Update UI with remaining time, e.g., update a TextView
                 val secondsRemaining = millisUntilFinished / 1000
                 // Example: update a TextView with remaining seconds
-                binding.tvResendTimer.text = "Resend OTP in \n $secondsRemaining seconds"
+                binding.tvResendTimer.text = "Re-send OTP in \n $secondsRemaining seconds"
             }
 
             override fun onFinish() {
                 // Countdown timer finished, enable the resend button
-                binding.resendButton.isEnabled = true
+                binding.resendButton.visibility = View.VISIBLE
                 // Example: update a TextView when timer finishes
                 binding.tvResendTimer.text = "Resend available"
             }

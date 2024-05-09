@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="15dp"
+    tools:context=".bottom_nav_bar.more.setting.SettingActivity">
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:rotation="180"
+        android:src="@drawable/baseline_arrow_forward_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black_app" />
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="Settings"
+        android:textColor="@color/black_app"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/termsOfService"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/edit_text_background_2"
+        android:drawableStart="@drawable/outline_lock_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/drawable_color"
+        android:fontFamily="@font/poppins"
+        android:paddingVertical="20dp"
+        android:paddingStart="15dp"
+        android:text="Terms of Service"
+        android:textColor="@color/black_app"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+
+    <TextView
+        android:id="@+id/paymentTerms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/edit_text_background_2"
+        android:drawableStart="@drawable/outline_lock_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/drawable_color"
+        android:fontFamily="@font/poppins"
+        android:paddingVertical="20dp"
+        android:paddingStart="15dp"
+        android:text="Payment Terms of Service"
+        android:textColor="@color/black_app"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/termsOfService" />
+
+
+    <TextView
+        android:id="@+id/privacyPolicy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/edit_text_background_2"
+        android:drawableStart="@drawable/outline_lock_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/drawable_color"
+        android:fontFamily="@font/poppins"
+        android:paddingVertical="20dp"
+        android:paddingStart="15dp"
+        android:text="Privacy Policy"
+        android:textColor="@color/black_app"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentTerms" />
+
+    <TextView
+        android:id="@+id/aboutUs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/edit_text_background_2"
+        android:drawableStart="@drawable/outline_info_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/drawable_color"
+        android:fontFamily="@font/poppins"
+        android:paddingVertical="20dp"
+        android:paddingStart="15dp"
+        android:text="About Us"
+        android:textColor="@color/black_app"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/privacyPolicy" />
+
+    <TextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/edit_text_background_2"
+        android:drawableStart="@drawable/outline_info_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/drawable_color"
+        android:fontFamily="@font/poppins"
+        android:paddingVertical="20dp"
+        android:paddingStart="15dp"
+        android:text="Version: 22.3.0"
+        android:textColor="@color/blue1"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aboutUs" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

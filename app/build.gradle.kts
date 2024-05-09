@@ -73,11 +73,14 @@ dependencies {
     //Circle View
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
-//    //ShimmerEffect
-//    implementation("com.facebook.shimmer:shimmer:0.5.0")
+    //ShimmerEffect
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
 
     //Refresh Layout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 
     implementation("com.google.android.play:integrity:1.3.0")
+
+    //OTP VIEW
+    implementation("io.github.chaosleung:pinview:1.4.4")
 }

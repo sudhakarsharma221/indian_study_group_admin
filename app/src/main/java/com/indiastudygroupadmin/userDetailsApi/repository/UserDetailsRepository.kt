@@ -133,10 +133,10 @@ class UserDetailsRepository {
     }
 
 
-    fun getUserExist(contact: String?) {
+    fun getUserExist(contact: String?, userName: String?) {
         showProgress.value = true
         val client = RetrofitUtilClass.getRetrofit().create(UserDetailsService::class.java)
-        val call = client.callGetUserExist(contact)
+        val call = client.callGetUserExist(contact, userName)
         call.enqueue(object : Callback<UserExistResponseModel?> {
             override fun onResponse(
                 call: Call<UserExistResponseModel?>, response: Response<UserExistResponseModel?>

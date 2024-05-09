@@ -14,7 +14,7 @@ import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivitySplashScreenBinding
-import com.indiastudygroupadmin.registerScreen.FillUserDetailsActivity
+import com.indiastudygroupadmin.fillDetails.FillUserDetailsActivity
 import com.indiastudygroupadmin.registerScreen.SignInActivity
 
 class SplashScreenActivity : AppCompatActivity() {

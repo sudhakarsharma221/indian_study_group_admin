@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_qr"
+        android:icon="@drawable/library_qr"
+        android:iconTint="@color/black1"
+        android:title="Show QR" />
+    <item
+        android:id="@+id/action_info"
+        android:icon="@drawable/outline_info_24"
+        android:iconTint="@color/black1"
+        android:title="Library info" />
+<!--    <item-->
+<!--        android:id="@+id/action_pause_slot"-->
+<!--        android:icon="@drawable/outline_pause_circle_24"-->
+<!--        android:iconTint="@color/black1"-->
+<!--        android:title="Pause slot" />-->
+<!--    <item-->
+<!--        android:id="@+id/action_pause_id"-->
+<!--        android:icon="@drawable/outline_pause_circle_24"-->
+<!--        android:iconTint="@color/black1"-->
+<!--        android:title="Pause Id" />-->
+</menu>

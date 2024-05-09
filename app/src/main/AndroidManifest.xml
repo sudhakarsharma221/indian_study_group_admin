@@ -25,7 +25,43 @@
         android:theme="@style/Theme.IndianStudyGroupAdmin"
         tools:targetApi="31">
         <activity
-            android:name=".edit_profile.ui.EditProfileActivity"
+            android:name=".bottom_nav_bar.more.student_data.ui.StudentDataDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.more.setting.screens.AboutUsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".editLibraryRequest.EditLibraryRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".qr.QrCodeShowActivity"
+            android:exported="false" />
+        <activity
+            android:name=".add_regular_student.AddRegularStudentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".message.ui.MessageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".notification.ui.NotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.more.wallet.WalletActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.more.help_desk.HelpDeskActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.more.setting.SettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.more.student_data.StudentDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.library.ui.LibraryDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".editProfile.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".addLibrary.ui.AddLibraryActivity"
@@ -37,7 +73,7 @@
             android:name=".registerScreen.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".registerScreen.FillUserDetailsActivity"
+            android:name=".fillDetails.FillUserDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".registerScreen.SignInActivity"
