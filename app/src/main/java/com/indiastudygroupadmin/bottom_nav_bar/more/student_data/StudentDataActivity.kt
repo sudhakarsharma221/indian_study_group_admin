@@ -13,7 +13,7 @@ import com.indiastudygroupadmin.databinding.ActivityStudentDataBinding
 
 class StudentDataActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStudentDataBinding
-    private var selectedItemFromList = ""
+    private var selectedItemFromList = "Regular"
     private lateinit var selectedItemButton: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +24,10 @@ class StudentDataActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
+        binding.backButton.setOnClickListener {
+            finish()
+        }
+
 
         setButtonState(binding.buttonRegular, true)
         setButtonState(binding.buttonNonRegular, false)

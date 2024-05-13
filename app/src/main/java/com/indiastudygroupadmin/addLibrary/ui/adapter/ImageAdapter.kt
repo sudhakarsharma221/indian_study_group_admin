@@ -1,26 +1,25 @@
 package com.indiastudygroupadmin.addLibrary.ui.adapter
 
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.bumptech.glide.Glide
 import com.indiastudygroupadmin.addLibrary.model.AddTimingsDataClass
-import com.indiastudygroupadmin.databinding.TimingItemLayoutBinding
+import com.indiastudygroupadmin.databinding.ImageItemLayoutBinding
 
-class TimingAdapter(val context: Context, private val list: ArrayList<AddTimingsDataClass>) :
-    Adapter<TimingAdapter.TimingViewHolder>() {
+class ImageAdapter(val context: Context, private val list: ArrayList<Uri>) :
+    Adapter<ImageAdapter.TimingViewHolder>() {
 
-    inner class TimingViewHolder(val binding: TimingItemLayoutBinding) : ViewHolder(binding.root) {
-        fun bindView(item: AddTimingsDataClass, context: Context, position: Int) {
-            binding.tvFrom.text = item.from
-            binding.tvTo.text = item.to
-            val days = item.days?.joinToString(separator = ", ")
-            binding.tvDays.text = days
+    inner class TimingViewHolder(val binding: ImageItemLayoutBinding) : ViewHolder(binding.root) {
+        fun bindView(imageUri: Uri, context: Context, position: Int) {
+            Glide.with(itemView.context).load(imageUri).into(binding.image)
             binding.delete.setOnClickListener {
-                // Remove the item from the list
                 list.removeAt(position)
-                // Notify the adapter that item is removed
+                notifyItemRemoved(position)
                 notifyDataSetChanged()
             }
         }
@@ -28,7 +27,7 @@ class TimingAdapter(val context: Context, private val list: ArrayList<AddTimings
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimingViewHolder {
         val binding =
-            TimingItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ImageItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TimingViewHolder(binding)
     }
 
@@ -42,7 +41,7 @@ class TimingAdapter(val context: Context, private val list: ArrayList<AddTimings
         }
     }
 
-    fun addItem(item: AddTimingsDataClass) {
+    fun addItem(item: Uri) {
         list.add(item)
         notifyDataSetChanged()
     }

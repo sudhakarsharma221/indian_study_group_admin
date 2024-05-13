@@ -2,18 +2,16 @@ package com.indiastudygroupadmin.pincode
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.indiastudygroupadmin.pincode.PincodeRepository
-import com.indiastudygroupadmin.pincode.PincodeResponseModel
 
-class PincodeViewModel : ViewModel() {
+class PinCodeViewModel : ViewModel() {
 
     var showProgress = MutableLiveData<Boolean>()
     var errorMessage = MutableLiveData<String>()
-    var pincodeResponse = MutableLiveData<PincodeResponseModel>()
-    private val repository = PincodeRepository()
+    var pinCodeResponse = MutableLiveData<PincodeResponseModel>()
+    private val repository = PinCodeRepository()
 
     init {
-        this.pincodeResponse = repository.pincodeResponse
+        this.pinCodeResponse = repository.pincodeResponse
         this.showProgress = repository.showProgress
         this.errorMessage = repository.errorMessage
     }

@@ -1,4 +1,4 @@
-package com.indiastudygroupadmin.pincode
+package com.indiastudygroupadmin.email
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -8,26 +8,25 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PincodeRepository {
+class EmailRepository {
     val showProgress = MutableLiveData<Boolean>()
     val errorMessage = MutableLiveData<String>()
-    val pincodeResponse = MutableLiveData<PincodeResponseModel>()
+    val emailResponse = MutableLiveData<EmailResponseModel>()
 
-    fun getPincodeDetails(pincode: String?) {
+    fun postEmail(emailRequestModel: EmailRequestModel?) {
         showProgress.value = true
-        val client =
-            RetrofitUtilClass.getRetrofitPincode().create(PincodeNetworkService::class.java)
-        val call = client.callPincodeDetailsApi(pincode)
-        call.enqueue(object : Callback<PincodeResponseModel?> {
+        val client = RetrofitUtilClass.getRetrofitEmail().create(EmailNetworkService::class.java)
+        val call = client.callEmailApi(emailRequestModel)
+        call.enqueue(object : Callback<EmailResponseModel?> {
             override fun onResponse(
-                call: Call<PincodeResponseModel?>, response: Response<PincodeResponseModel?>
+                call: Call<EmailResponseModel?>, response: Response<EmailResponseModel?>
             ) {
                 showProgress.postValue(false)
                 val body = response.body()
-                Log.d("pincodeResponse", "body : ${body.toString()}")
+                Log.d("emailResponse", "body : ${body.toString()}")
 
                 if (response.isSuccessful) {
-                    pincodeResponse.postValue(body!!)
+                    emailResponse.postValue(body!!)
                 } else {
                     if (response.code() == AppConstant.USER_NOT_FOUND) {
                         errorMessage.postValue("User not exist please sign up")
@@ -37,8 +36,8 @@ class PincodeRepository {
                 }
             }
 
-            override fun onFailure(call: Call<PincodeResponseModel?>, t: Throwable) {
-                Log.d("pincodeResponse", "failed : ${t.localizedMessage}")
+            override fun onFailure(call: Call<EmailResponseModel?>, t: Throwable) {
+                Log.d("emailResponse", "failed : ${t.localizedMessage}")
                 showProgress.postValue(false)
                 errorMessage.postValue("Server error please try after sometime")
             }

@@ -1,6 +1,7 @@
 package com.indiastudygroupadmin.bottom_nav_bar.profile
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -37,7 +38,7 @@ class ProfileFragment : Fragment() {
         //   inflater.inflate(R.layout.fragment_profile, container, false)
         viewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
         userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
-//        requireActivity().window.statusBarColor = Color.parseColor("#5669FF")
+        requireActivity().window.statusBarColor = Color.parseColor("#5669FF")
         auth = FirebaseAuth.getInstance()
 
         if (!ApiCallsConstant.apiCallsOnceProfile) {

@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:paddingVertical="10dp"
-    android:paddingHorizontal="20dp"
+    android:paddingTop="10dp"
+    android:paddingHorizontal="15dp"
     tools:context=".bottom_nav_bar.library.ui.LibraryFragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -82,15 +82,15 @@
                 android:id="@+id/currentLocation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:layout_marginStart="-5dp"
-                android:layout_marginEnd="40dp"
-                android:drawableStart="@drawable/baseline_location_on_24"
+                android:drawableStart="@drawable/outline_location_on_24"
                 android:drawableTint="@color/blue1"
                 android:fontFamily="@font/poppins"
                 android:text="Current location"
                 android:textColor="@color/black_app"
                 android:textSize="15sp"
-                app:layout_constraintEnd_toStartOf="@+id/notification"
+                app:layout_constraintEnd_toStartOf="@+id/message"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/location" />
 
@@ -234,7 +234,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="10dp"
-                android:paddingBottom="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

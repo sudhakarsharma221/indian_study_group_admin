@@ -57,6 +57,12 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    //ShimmerEffect
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    //Image Slider
+    implementation("com.github.dangiashish:Auto-Image-Slider:1.0.4")
+
     //Glide
     implementation("com.github.bumptech.glide:glide:4.14.2")
 

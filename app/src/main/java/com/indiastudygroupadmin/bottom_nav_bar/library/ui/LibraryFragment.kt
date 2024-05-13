@@ -1,5 +1,6 @@
 package com.indiastudygroupadmin.bottom_nav_bar.library.ui
 
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -40,11 +41,11 @@ class LibraryFragment : Fragment() {
         userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         libraryList = arrayListOf()
         auth = FirebaseAuth.getInstance()
+        requireActivity().window.statusBarColor = Color.WHITE
 
 //        inflater.inflate(R.layout.fragment_home, container, false)
 
         if (!ApiCallsConstant.apiCallsOnceHome) {
-            Log.d("PINCODEGONE", "GONEEE")
             userDetailsViewModel.callGetUserDetails(auth.currentUser!!.uid)
             ApiCallsConstant.apiCallsOnceHome = true
             ApiCallsConstant.apiCallsOnceLibrary = false
@@ -78,6 +79,7 @@ class LibraryFragment : Fragment() {
             ApiCallsConstant.apiCallsOnceLibrary = true
         }
         binding.swiperefresh.setOnRefreshListener {
+            libraryList.clear()
             for (libId in userData.libraries) {
                 callIdLibraryDetailsApi(libId)
             }
@@ -148,7 +150,7 @@ class LibraryFragment : Fragment() {
 
     private fun observerIdLibraryApiResponse() {
         libraryDetailsViewModel.idLibraryResponse.observe(viewLifecycleOwner, Observer {
-            libraryList.add(it.libData!!)
+            it.libData?.let { it1 -> libraryList.add(it1) }
             adapter = LibraryAdapter(requireContext(), libraryList)
             binding.recyclerView.adapter = adapter
             adapter.notifyDataSetChanged()

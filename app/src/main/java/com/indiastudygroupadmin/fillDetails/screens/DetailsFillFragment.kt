@@ -1,6 +1,5 @@
 package com.indiastudygroupadmin.fillDetails.screens
 
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,20 +8,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.FragmentDetailsFillBinding
-import com.indiastudygroupadmin.pincode.PincodeViewModel
+import com.indiastudygroupadmin.pincode.PinCodeViewModel
 
 class DetailsFillFragment : Fragment() {
     private lateinit var binding: FragmentDetailsFillBinding
 
-    private lateinit var pincodeViewModel: PincodeViewModel
+    private lateinit var pincodeViewModel: PinCodeViewModel
     private val namePattern = "^[a-zA-Z]+$"
 
     private lateinit var district: String
@@ -33,7 +30,7 @@ class DetailsFillFragment : Fragment() {
     ): View? {
         binding = FragmentDetailsFillBinding.inflate(layoutInflater)
         // Inflate the layout for this fragment
-        pincodeViewModel = ViewModelProvider(this)[PincodeViewModel::class.java]
+        pincodeViewModel = ViewModelProvider(this)[PinCodeViewModel::class.java]
 
 //        inflater.inflate(R.layout.fragment_details_fill, container, false)
 
@@ -126,7 +123,7 @@ class DetailsFillFragment : Fragment() {
     }
 
     private fun observerPincodeApiResponse() {
-        pincodeViewModel.pincodeResponse.observe(viewLifecycleOwner, Observer {
+        pincodeViewModel.pinCodeResponse.observe(viewLifecycleOwner, Observer {
             Log.d("testPINCODEAPI", it.toString())
             if (it[0].postOffice == null) {
                 ToastUtil.makeToast(requireContext(), "Please enter valid pincode")

@@ -6,26 +6,26 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.indiastudygroupadmin.R
-import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
 import com.indiastudygroupadmin.databinding.ActivityEditLibraryRequestBinding
-import com.indiastudygroupadmin.registerScreen.SignInActivity
+import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 
 class EditLibraryRequestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditLibraryRequestBinding
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private lateinit var auth: FirebaseAuth
+    private lateinit var libraryData: LibraryResponseItem
+
 
     private var photoUrl: String? = ""
     private var storageRef = Firebase.storage
@@ -47,10 +47,24 @@ class EditLibraryRequestActivity : AppCompatActivity() {
                 Log.d("PhotoPicker", "No media selected")
             }
         }
-        initListener()
+        val receivedIntent = intent
+
+        if (receivedIntent.hasExtra("libraryData")) {
+            val userDetails: LibraryResponseItem? = receivedIntent.getParcelableExtra("libraryData")
+            userDetails?.let {
+                libraryData = it
+                initListener()
+                1
+            }
+        } else {
+            ToastUtil.makeToast(this, "Library details not found")
+            finish()
+        }
     }
 
     private fun initListener() {
+
+
         binding.addImage.setOnClickListener {
             uploadImageDialog()
         }

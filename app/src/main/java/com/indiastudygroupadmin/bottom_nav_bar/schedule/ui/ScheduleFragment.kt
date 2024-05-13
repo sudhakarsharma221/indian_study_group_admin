@@ -1,5 +1,6 @@
 package com.indiastudygroupadmin.bottom_nav_bar.schedule.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ class ScheduleFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentScheduleBinding.inflate(layoutInflater)
+        requireActivity().window.statusBarColor = Color.WHITE
         // Inflate the layout for this fragment
         //inflater.inflate(R.layout.fragment_schedule, container, false)
         return binding.root

@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bottom_dialog_backgorund"
+    android:background="@drawable/filter_bottom_dialog_background"
     android:padding="20dp">
 
     <View
         android:id="@+id/view2"
         android:layout_width="70dp"
         android:layout_height="2dp"
-        android:background="@color/white"
+        android:background="@color/black_app"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,37 +22,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Add timing"
-        android:textColor="@color/white"
+        android:textColor="@color/black_app"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/addDaysButton"
-        app:layout_constraintTop_toBottomOf="@+id/view2" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/addDaysButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/edit_text_background"
-        android:text="Choose days"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/toText"
         app:layout_constraintStart_toStartOf="@+id/fromText"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <TextView
-        android:id="@+id/tvDays"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addDaysButton" />
+        app:layout_constraintTop_toBottomOf="@+id/view2" />
 
 
     <TextView
@@ -60,48 +34,91 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="25dp"
-        android:background="@drawable/edit_text_background"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/edit_text_background_3"
         android:gravity="center"
         android:paddingHorizontal="20dp"
         android:paddingVertical="15dp"
         android:text="Select"
-        android:textColor="@color/white"
+        android:textColor="@color/black_app"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDays" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <TextView
         android:id="@+id/toText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="15dp"
-        android:background="@drawable/edit_text_background"
+        android:background="@drawable/edit_text_background_3"
         android:gravity="center"
         android:paddingHorizontal="20dp"
         android:paddingVertical="15dp"
         android:text="Select"
-        android:textColor="@color/white"
+        android:textColor="@color/black_app"
         app:layout_constraintBaseline_toBaselineOf="@+id/fromText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline2" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/confirmButton"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/edit_text_background"
-        android:backgroundTint="#2cc851"
-        android:text="Confirm"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/toText"
-        app:layout_constraintStart_toStartOf="@+id/fromText"
-        app:layout_constraintTop_toBottomOf="@+id/toText" />
+        android:layout_marginHorizontal="35dp"
+        android:layout_marginTop="20dp"
+        android:outlineAmbientShadowColor="@color/blue1"
+        android:outlineSpotShadowColor="@color/blue1"
+        app:cardBackgroundColor="@color/blue1"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="5dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fromText"
+        app:strokeColor="@color/blue1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="2dp">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="ADD"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                app:cardBackgroundColor="#384AED"
+                app:cardCornerRadius="20dp"
+                app:cardUseCompatPadding="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:src="@drawable/baseline_arrow_forward_24" />
+            </androidx.cardview.widget.CardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
@@ -115,9 +132,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
+        android:fontFamily="@font/poppins"
         android:text="From"
-        android:textColor="@color/white"
+        android:textColor="@color/black_app"
         android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/fromText"
         app:layout_constraintEnd_toEndOf="@+id/fromText"
         app:layout_constraintStart_toStartOf="@+id/fromText" />
@@ -127,9 +146,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
+        android:fontFamily="@font/poppins"
         android:text="To"
-        android:textColor="@color/white"
+        android:textColor="@color/black_app"
         android:textSize="12sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/toText"
         app:layout_constraintEnd_toEndOf="@+id/toText"
         app:layout_constraintStart_toStartOf="@+id/toText" />

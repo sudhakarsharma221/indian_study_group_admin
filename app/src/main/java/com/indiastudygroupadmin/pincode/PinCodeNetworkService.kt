@@ -5,7 +5,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface PincodeNetworkService {
+interface PinCodeNetworkService {
     @GET(AppUrlsEndpoint.PINCODE_DETAILS)
     fun callPincodeDetailsApi(
         @Path("pinCode") pinCode: String?

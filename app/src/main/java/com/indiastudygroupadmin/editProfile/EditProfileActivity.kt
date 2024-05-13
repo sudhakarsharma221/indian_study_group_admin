@@ -28,9 +28,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ApiCallsConstant
+import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityEditProfileBinding
-import com.indiastudygroupadmin.pincode.PincodeViewModel
+import com.indiastudygroupadmin.pincode.PinCodeViewModel
 import com.indiastudygroupadmin.userDetailsApi.model.Address
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPutRequestBodyModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
@@ -76,7 +77,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
-    private lateinit var pinCodeViewModel: PincodeViewModel
+    private lateinit var pinCodeViewModel: PinCodeViewModel
     private lateinit var userDetailsViewModel: UserDetailsViewModel
     private lateinit var district: String
     lateinit var state: String
@@ -86,7 +87,7 @@ class EditProfileActivity : AppCompatActivity() {
         binding = ActivityEditProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
-        pinCodeViewModel = ViewModelProvider(this)[PincodeViewModel::class.java]
+        pinCodeViewModel = ViewModelProvider(this)[PinCodeViewModel::class.java]
         auth = FirebaseAuth.getInstance()
         storageRef = FirebaseStorage.getInstance()
         window.statusBarColor = Color.parseColor("#5669FF")
@@ -161,6 +162,7 @@ class EditProfileActivity : AppCompatActivity() {
                 override fun afterTextChanged(s: Editable?) {
                     val pincode = s.toString().trim()
                     if (pincode.length == 6) {
+                        HideKeyboard.hideKeyboard(this@EditProfileActivity, binding.pincodeEt.windowToken)
                         callPincodeApi(pincode)
                     }
                 }
@@ -350,7 +352,7 @@ class EditProfileActivity : AppCompatActivity() {
     }
 
     private fun observerPincodeApiResponse() {
-        pinCodeViewModel.pincodeResponse.observe(this, Observer {
+        pinCodeViewModel.pinCodeResponse.observe(this, Observer {
             Log.d("testPINCODEAPI", it.toString())
             if (it[0].postOffice == null) {
                 ToastUtil.makeToast(this, "Please enter valid pincode")

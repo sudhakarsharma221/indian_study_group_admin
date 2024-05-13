@@ -40,6 +40,7 @@ class QrCodeShowActivity : AppCompatActivity() {
             ToastUtil.makeToast(this, "Some Error Occurred")
             finish()
         }
+
         binding.backButton.setOnClickListener {
             finish()
         }

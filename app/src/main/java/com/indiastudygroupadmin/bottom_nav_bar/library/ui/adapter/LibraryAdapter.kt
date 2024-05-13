@@ -66,8 +66,10 @@ class LibraryAdapter(
             }
 
             binding.tvAddress.text = library.address?.street
-            Glide.with(context).load(library.photo).placeholder(R.drawable.noimage)
-                .error(R.drawable.noimage).into(binding.imageView)
+            if (library.photo?.isNotEmpty() == true) {
+                Glide.with(context).load(library.photo?.get(0)).placeholder(R.drawable.noimage)
+                    .error(R.drawable.noimage).into(binding.imageView)
+            }
             binding.layoutView.setOnClickListener {
                 val intent = Intent(context, LibraryDetailsActivity::class.java)
                 intent.putExtra("LibraryId", library.id)
