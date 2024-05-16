@@ -75,109 +75,268 @@
                     android:id="@+id/tvName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:fontFamily="@font/poppins"
                     android:text="Central  Library"
-                    android:layout_marginTop="15dp"
                     android:textColor="@color/black_app"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="20dp"
-                    android:layout_height="0dp"
-                    android:src="@drawable/seat"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvSeats"
+                <!--                <ImageView-->
+                <!--                    android:id="@+id/imageView4"-->
+                <!--                    android:layout_width="20dp"-->
+                <!--                    android:layout_height="0dp"-->
+                <!--                    android:src="@drawable/seat"-->
+                <!--                    app:layout_constraintBottom_toBottomOf="@+id/tvSeats"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/tvSeats"-->
+                <!--                    app:tint="@color/blue1" />-->
+
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/tvSeats"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginStart="8dp"-->
+                <!--                    android:layout_marginTop="15dp"-->
+                <!--                    android:fontFamily="@font/poppins"-->
+                <!--                    android:text="12/20 seats vacant"-->
+                <!--                    android:textColor="@color/black_app"-->
+                <!--                    android:textSize="12sp"-->
+                <!--                    android:textStyle="bold"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/imageView4"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/tvName" />-->
+
+                <TextView
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="₹100 /hour"
+                    android:textColor="@color/drawable_color"
+                    android:textSize="15sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvSeats"
-                    app:tint="@color/blue1" />
+                    app:layout_constraintTop_toBottomOf="@+id/moreButton" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDays"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:scrollbars="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrice" />
 
 
                 <TextView
                     android:id="@+id/tvSeats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins"
-                    android:text="12/20 seats vacant"
+                    android:text="Slot"
                     android:textColor="@color/black_app"
                     android:textSize="12sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/imageView4"
-                    app:layout_constraintTop_toBottomOf="@+id/tvName" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rvDays" />
 
                 <TextView
-                    android:id="@+id/tvPrice"
+                    android:id="@+id/textView27"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
                     android:fontFamily="@font/poppins"
-                    android:text="₹100 /hour"
-                    android:textColor="@color/drawable_color"
-                    android:textSize="14sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvSeats"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="Vacant Seats"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/tvSeats"
                     app:layout_constraintTop_toTopOf="@+id/tvSeats" />
 
                 <TextView
-                    android:id="@+id/textView10"
+                    android:id="@+id/textView25"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="20dp"
                     android:fontFamily="@font/poppins"
-                    android:text="Time slot"
+                    android:text="Timing"
                     android:textColor="@color/black_app"
-                    android:textSize="14sp"
+                    android:textSize="12sp"
                     android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/textView27"
+                    app:layout_constraintTop_toTopOf="@+id/tvSeats" />
+
+
+                <TextView
+                    android:id="@+id/tvTime1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="10:00 am to 10:00 pm"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView25"
+                    app:layout_constraintTop_toTopOf="@+id/tvSeats11" />
+
+                <TextView
+                    android:id="@+id/tvTime2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="10:00 am to 10:00 pm"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView25"
+                    app:layout_constraintTop_toTopOf="@+id/tvSeats22" />
+
+                <TextView
+                    android:id="@+id/tvTime3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins"
+                    android:text="10:00 am to 10:00 pm"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView25"
+                    app:layout_constraintTop_toTopOf="@+id/tvSeats33" />
+
+
+                <TextView
+                    android:id="@+id/tvSeats1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="1"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvSeats" />
 
                 <TextView
-                    android:id="@+id/timeMorning"
+                    android:id="@+id/tvSeats11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/edit_text_background_3"
+                    android:layout_marginVertical="10dp"
                     android:fontFamily="@font/poppins"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="10:00 am to 10:00 pm"
+                    android:text="Seats"
                     android:textColor="@color/black_app"
-                    android:textSize="13sp"
-                    app:layout_constraintStart_toStartOf="@+id/textView10"
-                    app:layout_constraintTop_toBottomOf="@+id/textView10" />
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/textView27"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats" />
+
 
                 <TextView
-                    android:id="@+id/timeAfternoon"
+                    android:id="@+id/tvSeats2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:background="@drawable/edit_text_background_3"
+                    android:layout_marginVertical="10dp"
                     android:fontFamily="@font/poppins"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="10:00 am to 10:00 pm"
+                    android:text="2"
                     android:textColor="@color/black_app"
-                    android:textSize="13sp"
-                    app:layout_constraintStart_toEndOf="@+id/timeMorning"
-                    app:layout_constraintTop_toTopOf="@+id/timeMorning" />
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats1" />
 
                 <TextView
-                    android:id="@+id/timeEvening"
+                    android:id="@+id/tvSeats22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/edit_text_background_3"
+                    android:layout_marginVertical="10dp"
                     android:fontFamily="@font/poppins"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="6dp"
-                    android:text="10:00 am to 10:00 pm"
+                    android:text="Seats"
                     android:textColor="@color/black_app"
-                    android:textSize="13sp"
-                    app:layout_constraintStart_toStartOf="@+id/timeMorning"
-                    app:layout_constraintTop_toBottomOf="@+id/timeMorning" />
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSeats11"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats1" />
+
+                <TextView
+                    android:id="@+id/tvSeats3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="3"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats2" />
+
+                <TextView
+                    android:id="@+id/tvSeats33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="10dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="Seats"
+                    android:textColor="@color/black_app"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSeats22"
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats2" />
+
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/textView10"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="15dp"-->
+                <!--                    android:fontFamily="@font/poppins"-->
+                <!--                    android:text="Time slot"-->
+                <!--                    android:textColor="@color/black_app"-->
+                <!--                    android:textSize="14sp"-->
+                <!--                    android:textStyle="bold"-->
+                <!--                    app:layout_constraintStart_toStartOf="parent"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/tvSeats" />-->
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/timeMorning"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:background="@drawable/edit_text_background_3"-->
+                <!--                    android:fontFamily="@font/poppins"-->
+                <!--                    android:paddingHorizontal="10dp"-->
+                <!--                    android:paddingVertical="6dp"-->
+                <!--                    android:text="10:00 am to 10:00 pm"-->
+                <!--                    android:textColor="@color/black_app"-->
+                <!--                    android:textSize="13sp"-->
+                <!--                    app:layout_constraintStart_toStartOf="@+id/textView10"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/textView10" />-->
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/timeAfternoon"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginStart="15dp"-->
+                <!--                    android:background="@drawable/edit_text_background_3"-->
+                <!--                    android:fontFamily="@font/poppins"-->
+                <!--                    android:paddingHorizontal="10dp"-->
+                <!--                    android:paddingVertical="6dp"-->
+                <!--                    android:text="10:00 am to 10:00 pm"-->
+                <!--                    android:textColor="@color/black_app"-->
+                <!--                    android:textSize="13sp"-->
+                <!--                    app:layout_constraintStart_toEndOf="@+id/timeMorning"-->
+                <!--                    app:layout_constraintTop_toTopOf="@+id/timeMorning" />-->
+
+                <!--                <TextView-->
+                <!--                    android:id="@+id/timeEvening"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginTop="10dp"-->
+                <!--                    android:background="@drawable/edit_text_background_3"-->
+                <!--                    android:fontFamily="@font/poppins"-->
+                <!--                    android:paddingHorizontal="10dp"-->
+                <!--                    android:paddingVertical="6dp"-->
+                <!--                    android:text="10:00 am to 10:00 pm"-->
+                <!--                    android:textColor="@color/black_app"-->
+                <!--                    android:textSize="13sp"-->
+                <!--                    app:layout_constraintStart_toStartOf="@+id/timeMorning"-->
+                <!--                    app:layout_constraintTop_toBottomOf="@+id/timeMorning" />-->
 
                 <ImageView
                     android:id="@+id/imageView3"
@@ -200,17 +359,17 @@
                     android:textSize="13sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/imageView3"
-                    app:layout_constraintTop_toBottomOf="@+id/timeEvening" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvSeats33" />
 
 
                 <ImageView
                     android:id="@+id/moreButton"
-                    android:layout_width="50dp"
-                    android:layout_height="0dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:src="@drawable/more_icon"
-                    app:layout_constraintBottom_toTopOf="@+id/tvPrice"
-                    app:layout_constraintEnd_toEndOf="@+id/tvPrice"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvName"
                     app:tint="@color/blue1" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

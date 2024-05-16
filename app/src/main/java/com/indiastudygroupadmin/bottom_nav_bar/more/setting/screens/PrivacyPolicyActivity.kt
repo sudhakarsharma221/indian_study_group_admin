@@ -6,21 +6,22 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.bottom_nav_bar.more.setting.policy.viewModel.PolicyViewModel
-import com.indiastudygroupadmin.databinding.ActivityAboutUsBinding
+import com.indiastudygroupadmin.databinding.ActivityPrivacyPolicyBinding
 
-class AboutUsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAboutUsBinding
+class PrivacyPolicyActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityPrivacyPolicyBinding
     private lateinit var viewModel: PolicyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAboutUsBinding.inflate(layoutInflater)
+        binding = ActivityPrivacyPolicyBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[PolicyViewModel::class.java]
 
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
         initListener()
         getPolicyDetails()
+
     }
 
     private fun initListener() {
@@ -32,7 +33,7 @@ class AboutUsActivity : AppCompatActivity() {
     private fun getPolicyDetails(
     ) {
         val data = viewModel.getPolicyDetailsResponse()
-        binding.tvText.text = data?.data?.aboutUs ?: "Error Getting The Data"
-
+        binding.tvText.text = data?.data?.privacyPolicy ?: "Error Getting The Data"
     }
+
 }

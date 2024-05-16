@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.text.HtmlCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
@@ -30,8 +31,11 @@ class LibraryAdapter(
 //            binding.favourite.setOnClickListener {
 //                binding.favourite.setCardBackgroundColor(Color.RED)
 //            }
+
+            binding.rvDays.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             binding.tvName.text = library.name
-            binding.tvSeats.text = "${library.vacantSeats} / ${library.seats} seats vacant"
+//            binding.tvSeats.text = "${library.vacantSeats} / ${library.seats} seats vacant"
 
             binding.tvPrice.text = HtmlCompat.fromHtml(
                 "<b><font color='#5669FF'>₹${library.pricing?.daily}</font></b> /Day<br/>",
@@ -43,29 +47,129 @@ class LibraryAdapter(
             binding.moreButton.setOnClickListener { view ->
                 showPopupMenu(view, position, library.id, library.name, library.id)
             }
-            val timing = library.timing
 
-            when (timing.size) {
+            binding.rvDays.adapter = DaysAdapter(context, library.timing[0].days)
+
+            val seats = library.vacantSeats!!
+
+            when (seats.size) {
                 3 -> {
-                    binding.timeMorning.text = "Morning : ${timing[0].from} to ${timing[0].to}"
-                    binding.timeAfternoon.text = "Afternoon : ${timing[1].from} to ${timing[1].to}"
-                    binding.timeEvening.text = "Evening : ${timing[2].from} to ${timing[2].to}"
+                    binding.tvSeats33.text = "${seats[2]} / ${library.seats}"
+                    binding.tvSeats22.text = "${seats[1]} / ${library.seats}"
+                    binding.tvSeats11.text = "${seats[0]} / ${library.seats}"
+
+
+                    val timeStartFormatted2 = formatTime(library.timing[2].from?.toInt(), 0)
+                    val timeEndFormatted2 = formatTime(library.timing[2].to?.toInt(), 0)
+
+                    binding.tvTime2.text = "$timeStartFormatted2 to $timeEndFormatted2"
+
+
+                    val timeStartFormatted1 = formatTime(library.timing[1].from?.toInt(), 0)
+                    val timeEndFormatted1 = formatTime(library.timing[1].to?.toInt(), 0)
+
+                    binding.tvTime2.text = "$timeStartFormatted1 to $timeEndFormatted1"
+
+
+                    val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
+                    val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
+
+                    binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
+
                 }
 
                 2 -> {
-                    binding.timeMorning.text = "Morning ${timing[0].from} to ${timing[0].to}"
-                    binding.timeAfternoon.text = "Afternoon ${timing[1].from} to ${timing[1].to}"
-                    binding.timeEvening.visibility = View.GONE
+                    binding.tvSeats22.text = "${seats[1]} / ${library.seats}"
+                    binding.tvSeats11.text = "${seats[0]} / ${library.seats}"
+                    val timeStartFormatted1 = formatTime(library.timing[1].from?.toInt(), 0)
+                    val timeEndFormatted1 = formatTime(library.timing[1].to?.toInt(), 0)
+
+                    binding.tvTime2.text = "$timeStartFormatted1 to $timeEndFormatted1"
+
+
+                    val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
+                    val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
+
+                    binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
+
+                    binding.tvSeats33.visibility = View.GONE
+                    binding.tvSeats3.visibility = View.GONE
+                    binding.tvTime3.visibility = View.GONE
                 }
 
                 1 -> {
-                    binding.timeMorning.text = "Morning ${timing[0].from} to ${timing[0].to}"
-                    binding.timeEvening.visibility = View.GONE
-                    binding.timeAfternoon.visibility = View.GONE
+                    binding.tvSeats11.text = "${seats[0]} / ${library.seats}"
+
+                    val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
+                    val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
+
+
+                    binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
+
+                    binding.tvSeats22.visibility = View.GONE
+                    binding.tvSeats2.visibility = View.GONE
+                    binding.tvTime2.visibility = View.GONE
+                    binding.tvSeats3.visibility = View.GONE
+                    binding.tvSeats33.visibility = View.GONE
+                    binding.tvTime3.visibility = View.GONE
+
                 }
             }
 
-            binding.tvAddress.text = library.address?.street
+
+//            val timing = library.timing
+//
+//            when (timing.size) {
+//                3 -> {
+//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+//
+//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
+//
+//                    val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
+//                    val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
+//
+//                    binding.timeAfternoon.text =
+//                        "Afternoon : $timeStartFormatted1 to $timeEndFormatted1"
+//
+//                    val timeStartFormatted2 = formatTime(timing[2].from?.toInt(), 0)
+//                    val timeEndFormatted2 = formatTime(timing[2].to?.toInt(), 0)
+//
+//
+//
+//                    binding.timeEvening.text =
+//                        "Evening : $timeStartFormatted2 to $timeEndFormatted2"
+//                }
+//
+//                2 -> {
+//
+//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+//
+//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
+//
+//                    val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
+//                    val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
+//
+//                    binding.timeAfternoon.text =
+//                        "Afternoon : $timeStartFormatted1 to $timeEndFormatted1"
+//                    binding.timeEvening.visibility = View.GONE
+//                }
+//
+//                1 -> {
+//
+//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+//
+//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
+//                    binding.timeEvening.visibility = View.GONE
+//                    binding.timeAfternoon.visibility = View.GONE
+//                }
+//            }
+
+            binding.tvAddress.text =
+                "${library.address?.street}, ${library.address?.district}, ${library.address?.state}, ${library.address?.pincode}"
+
             if (library.photo?.isNotEmpty() == true) {
                 Glide.with(context).load(library.photo?.get(0)).placeholder(R.drawable.noimage)
                     .error(R.drawable.noimage).into(binding.imageView)
@@ -136,5 +240,11 @@ class LibraryAdapter(
             view.setBackgroundColor(Color.WHITE)
         }
         popupMenu.show()
+    }
+
+    private fun formatTime(hours: Int?, minutes: Int?): String {
+        val hourFormatted = if (hours == 0 || hours == 21) 12 else hours?.rem(12)
+        val amPm = if (hours!! < 12) "am" else "pm"
+        return String.format("%02d:%02d %s", hourFormatted, minutes, amPm)
     }
 }

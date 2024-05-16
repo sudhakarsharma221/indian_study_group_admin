@@ -147,7 +147,6 @@ class LibraryFragment : Fragment() {
             ToastUtil.makeToast(requireContext(), it)
         })
     }
-
     private fun observerIdLibraryApiResponse() {
         libraryDetailsViewModel.idLibraryResponse.observe(viewLifecycleOwner, Observer {
             it.libData?.let { it1 -> libraryList.add(it1) }

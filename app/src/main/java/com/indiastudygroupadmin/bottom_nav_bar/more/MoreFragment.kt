@@ -1,6 +1,7 @@
 package com.indiastudygroupadmin.bottom_nav_bar.more
 
 import android.app.Dialog
+import android.graphics.Color
 import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -21,6 +22,7 @@ import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.more.help_desk.HelpDeskActivity
 import com.indiastudygroupadmin.bottom_nav_bar.more.setting.SettingActivity
+import com.indiastudygroupadmin.bottom_nav_bar.more.setting.policy.viewModel.PolicyViewModel
 import com.indiastudygroupadmin.bottom_nav_bar.more.student_data.StudentDataActivity
 import com.indiastudygroupadmin.bottom_nav_bar.more.wallet.WalletActivity
 import com.indiastudygroupadmin.databinding.FragmentMoreBinding
@@ -31,10 +33,11 @@ import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 
 class MoreFragment : Fragment() {
     private val EDIT_PROFILE_REQUEST_CODE = 100
+    private lateinit var viewModel: PolicyViewModel
+
 
     private lateinit var binding: FragmentMoreBinding
 
-    private lateinit var viewModel: MoreViewModel
     private lateinit var userDetailsViewModel: UserDetailsViewModel
     private lateinit var auth: FirebaseAuth
     private lateinit var userData: UserDetailsResponseModel
@@ -44,18 +47,21 @@ class MoreFragment : Fragment() {
     ): View {
         binding = FragmentMoreBinding.inflate(layoutInflater)
         auth = FirebaseAuth.getInstance()
+        viewModel = ViewModelProvider(this)[PolicyViewModel::class.java]
+
+        requireActivity().window.statusBarColor = Color.WHITE
 
         initListener()
 //        inflater.inflate(R.layout.fragment_profile, container, false)
-
+        observeProgress()
+        observerPolicyApiResponse()
+        observerErrorMessageApiResponse()
 
         return binding.root
     }
 
     private fun initListener() {
-        binding.studentData.setOnClickListener {
-            IntentUtil.startIntent(requireContext(), StudentDataActivity())
-        }
+        callPolicyDetails()
 
         binding.tvWallet.setOnClickListener {
             IntentUtil.startIntent(requireContext(), WalletActivity())
@@ -88,8 +94,37 @@ class MoreFragment : Fragment() {
             auth.signOut()
             ToastUtil.makeToast(requireContext(), "Successful Sign Out")
             IntentUtil.startIntent(requireContext(), SignInActivity())
+            ApiCallsConstant.apiCallsOnceHome = false
             requireActivity().finish()
         }
     }
+
+    private fun callPolicyDetails(
+    ) {
+        viewModel.callPolicyDetails()
+    }
+
+    private fun observerPolicyApiResponse() {
+        viewModel.policyDetailsResponse.observe(viewLifecycleOwner, Observer {
+            viewModel.setPolicyDetailsResponse(it)
+        })
+    }
+
+    private fun observeProgress() {
+        viewModel.showProgress.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+            } else {
+                binding.progressBar.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun observerErrorMessageApiResponse() {
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
+            ToastUtil.makeToast(requireContext(), it)
+        })
+    }
+
 
 }

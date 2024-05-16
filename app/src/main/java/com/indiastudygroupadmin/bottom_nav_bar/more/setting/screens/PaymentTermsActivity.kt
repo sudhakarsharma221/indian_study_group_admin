@@ -3,24 +3,26 @@ package com.indiastudygroupadmin.bottom_nav_bar.more.setting.screens
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModelProvider
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.bottom_nav_bar.more.setting.policy.viewModel.PolicyViewModel
-import com.indiastudygroupadmin.databinding.ActivityAboutUsBinding
+import com.indiastudygroupadmin.databinding.ActivityPaymentTermsBinding
 
-class AboutUsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAboutUsBinding
+class PaymentTermsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityPaymentTermsBinding
     private lateinit var viewModel: PolicyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAboutUsBinding.inflate(layoutInflater)
+        binding = ActivityPaymentTermsBinding.inflate(layoutInflater)
         viewModel = ViewModelProvider(this)[PolicyViewModel::class.java]
 
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
         initListener()
         getPolicyDetails()
+
     }
 
     private fun initListener() {
@@ -32,7 +34,14 @@ class AboutUsActivity : AppCompatActivity() {
     private fun getPolicyDetails(
     ) {
         val data = viewModel.getPolicyDetailsResponse()
-        binding.tvText.text = data?.data?.aboutUs ?: "Error Getting The Data"
+        val text = HtmlCompat.fromHtml(
+//            "<b>${data?.data?.tnc?.get(1)?.key}</b><br/>" +
+            "<b>Booking :</b><br/>${data?.data?.tnc?.get(1)?.value?.booking}<br/><br/>" +
+                    "<b>Payment :</b><br/>${data?.data?.tnc?.get(1)?.value?.payment}<br/><br/>" +
+                    "<b>Cancellation and Refunds :</b><br/>${data?.data?.tnc?.get(1)?.value?.cancellationAndRefunds}<br/>",
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
 
+        binding.tvText.text = text
     }
 }

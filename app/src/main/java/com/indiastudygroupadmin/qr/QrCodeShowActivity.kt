@@ -23,9 +23,7 @@ class QrCodeShowActivity : AppCompatActivity() {
         binding = ActivityQrCodeShowBinding.inflate(layoutInflater)
         window.statusBarColor = Color.WHITE
         setContentView(binding.root)
-
         initListener()
-
     }
 
     private fun initListener() {
@@ -45,7 +43,8 @@ class QrCodeShowActivity : AppCompatActivity() {
             finish()
         }
         binding.libraryName.text = name
-        val qrUrl = "https://api.qrserver.com/v1/create-qr-code/?data=${id}&amp;size=100x100"
+
+        val qrUrl = "https://quickchart.io/qr?text=${id}&size=400%27"
 
         Log.d("QRCODEFROMINTENT", qrUrl)
 

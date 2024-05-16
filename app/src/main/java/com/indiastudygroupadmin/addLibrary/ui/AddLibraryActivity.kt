@@ -197,7 +197,7 @@ class AddLibraryActivity : AppCompatActivity() {
                 binding.ownerEt.error = "Enter minimum 2 characters"
             } else if (owner.length > 30) {
                 binding.ownerEt.error = "Enter less than 30 characters"
-            } else if (morning == "Set Morning Time" || evening == "Set Evening Time" || afternoon == "Set Afternoon Time") {
+            } else if (morning == "Set Morning Time" && evening == "Set Evening Time" && afternoon == "Set Afternoon Time") {
                 binding.requireTime.visibility = View.VISIBLE
             } else {
                 ToastUtil.makeToast(this, "Email Sent")

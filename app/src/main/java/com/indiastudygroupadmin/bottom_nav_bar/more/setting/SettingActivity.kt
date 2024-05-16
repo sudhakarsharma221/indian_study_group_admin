@@ -6,6 +6,9 @@ import android.os.Bundle
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.bottom_nav_bar.more.setting.screens.AboutUsActivity
+import com.indiastudygroupadmin.bottom_nav_bar.more.setting.screens.PaymentTermsActivity
+import com.indiastudygroupadmin.bottom_nav_bar.more.setting.screens.PrivacyPolicyActivity
+import com.indiastudygroupadmin.bottom_nav_bar.more.setting.screens.TermsOfServiceActivity
 import com.indiastudygroupadmin.databinding.ActivitySettingBinding
 
 class SettingActivity : AppCompatActivity() {
@@ -25,6 +28,15 @@ class SettingActivity : AppCompatActivity() {
 
         binding.aboutUs.setOnClickListener {
             IntentUtil.startIntent(this, AboutUsActivity())
+        }
+        binding.privacyPolicy.setOnClickListener {
+            IntentUtil.startIntent(this, PrivacyPolicyActivity())
+        }
+        binding.termsOfService.setOnClickListener {
+            IntentUtil.startIntent(this, TermsOfServiceActivity())
+        }
+        binding.paymentTerms.setOnClickListener {
+            IntentUtil.startIntent(this, PaymentTermsActivity())
         }
     }
 }

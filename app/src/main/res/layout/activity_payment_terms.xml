@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="15dp"
-    tools:context=".bottom_nav_bar.more.setting.screens.AboutUsActivity">
+    tools:context=".bottom_nav_bar.more.setting.screens.PaymentTermsActivity">
 
     <ImageView
         android:id="@+id/backButton"
@@ -18,13 +18,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/black_app" />
 
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
-        android:text="About Us"
+        android:text="Payment Terms of Service"
         android:textColor="@color/black_app"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -67,6 +66,4 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
