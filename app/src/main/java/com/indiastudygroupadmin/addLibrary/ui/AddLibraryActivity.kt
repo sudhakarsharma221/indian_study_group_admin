@@ -1,6 +1,8 @@
 package com.indiastudygroupadmin.addLibrary.ui
 
 import android.app.Dialog
+import android.app.ProgressDialog
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
@@ -27,33 +29,30 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.addLibrary.ui.adapter.ImageAdapter
-import com.indiastudygroupadmin.addLibrary.viewModel.AddLibraryViewModel
+import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.TimePickerCustomDialog
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityAddLibraryBinding
 import com.indiastudygroupadmin.databinding.AddTimingBottomDialogBinding
+import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
+import com.indiastudygroupadmin.email.EmailRequestModel
+import com.indiastudygroupadmin.email.EmailViewModel
+import com.indiastudygroupadmin.email.From
+import com.indiastudygroupadmin.email.To
 import com.indiastudygroupadmin.pincode.PinCodeViewModel
 
 class AddLibraryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddLibraryBinding
-
     private lateinit var auth: FirebaseAuth
-    private var morning: String? = ""
     private var morningButton = false
-    private var afternoon: String? = ""
     private var afternoonButton = false
-    private var evening: String? = ""
     private var eveningButton = false
     private var storageRef = Firebase.storage
-
+    private lateinit var emailViewModel: EmailViewModel
     private var imagesUriList = ArrayList<Uri>()
-    private var selectedImageUris = ArrayList<Uri>()
-
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
-
     private lateinit var adapter: ImageAdapter
     private lateinit var pinCodeViewModel: PinCodeViewModel
-    lateinit var addLibViewModel: AddLibraryViewModel
     private var selectedFacilities: ArrayList<String>? = arrayListOf()
 
     private val facilitiesList = arrayOf(
@@ -78,6 +77,7 @@ class AddLibraryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddLibraryBinding.inflate(layoutInflater)
+        emailViewModel = ViewModelProvider(this)[EmailViewModel::class.java]
         setContentView(binding.root)
         pinCodeViewModel = ViewModelProvider(this)[PinCodeViewModel::class.java]
 //        addLibViewModel = ViewModelProvider(this)[AddLibraryViewModel::class.java]
@@ -105,6 +105,7 @@ class AddLibraryActivity : AppCompatActivity() {
         observerPincodeApiResponse()
         observeProgress()
         observerErrorMessageApiResponse()
+        observerEmailApiResponse()
 
     }
 
@@ -116,17 +117,17 @@ class AddLibraryActivity : AppCompatActivity() {
 
 
 
-        binding.buttonMorning.setOnClickListener {
+        binding.buttonSlot1.setOnClickListener {
             morningButton = true
             binding.requireTime.visibility = View.GONE
             showAddTimingsBottomDialog()
         }
-        binding.buttonAfternoon.setOnClickListener {
+        binding.buttonSlot2.setOnClickListener {
             afternoonButton = true
             binding.requireTime.visibility = View.GONE
             showAddTimingsBottomDialog()
         }
-        binding.buttonEvening.setOnClickListener {
+        binding.buttonSlot3.setOnClickListener {
             eveningButton = true
             binding.requireTime.visibility = View.GONE
             showAddTimingsBottomDialog()
@@ -151,6 +152,9 @@ class AddLibraryActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 val pincode = s.toString().trim()
                 if (pincode.length == 6) {
+                    HideKeyboard.hideKeyboard(
+                        this@AddLibraryActivity, binding.pincodeEt.windowToken
+                    )
                     callPincodeApi(pincode)
                 }
             }
@@ -167,9 +171,9 @@ class AddLibraryActivity : AppCompatActivity() {
             val seats = binding.seatsEt.text.toString()
             val owner = binding.ownerEt.text.toString()
             val bio = binding.bioEt.text.toString()
-            val morning = binding.buttonMorning.text.toString()
-            val afternoon = binding.buttonAfternoon.text.toString()
-            val evening = binding.buttonEvening.text.toString()
+            val buttonSlot1 = binding.buttonSlot1.text.toString()
+            val buttonSlot2 = binding.buttonSlot2.text.toString()
+            val buttonSlot3 = binding.buttonSlot3.text.toString()
 
 
 
@@ -197,32 +201,40 @@ class AddLibraryActivity : AppCompatActivity() {
                 binding.ownerEt.error = "Enter minimum 2 characters"
             } else if (owner.length > 30) {
                 binding.ownerEt.error = "Enter less than 30 characters"
-            } else if (morning == "Set Morning Time" && evening == "Set Evening Time" && afternoon == "Set Afternoon Time") {
+            } else if (buttonSlot1 == "Set Slot 1 Time" && buttonSlot2 == "Set Slot 2 Time" && buttonSlot3 == "Set Slot 3 Time") {
                 binding.requireTime.visibility = View.VISIBLE
             } else {
-                ToastUtil.makeToast(this, "Email Sent")
+                if (imagesUriList.isNotEmpty()) {
+                    uploadImage(
+                        libName,
+                        address,
+                        pinCode,
+                        state,
+                        district,
+                        seats,
+                        owner,
+                        bio,
+                        buttonSlot1,
+                        buttonSlot2,
+                        buttonSlot3
+                    )
+                } else {
+                    sendLibraryEmail(
+                        libName,
+                        address,
+                        pinCode,
+                        state,
+                        district,
+                        seats,
+                        owner,
+                        bio,
+                        buttonSlot1,
+                        buttonSlot2,
+                        buttonSlot3,
+                        arrayListOf()
+                    )
+                }
 
-//                callAddLib(
-//                    auth.currentUser!!.uid, AddLibraryRequestModel(
-//                        libName,
-//                        auth.currentUser!!.uid,
-//                        phoneNo,
-//                        seats.toInt(),
-//                        bio,
-//                        photoUrl,
-//                        selectedFacilities,
-//                        Address(
-//                            address,
-//                            pincode,
-//                            district,
-//                            state,
-//                            "28.680470694323148",
-//                            "77.49292190961113"
-//                        ),
-//                        Pricing(dailyCharge.toInt(), monthlyCharge.toInt(), weeklyCharge.toInt()),
-//                        timingsList
-//                    )
-//                )
             }
         }
     }
@@ -257,13 +269,13 @@ class AddLibraryActivity : AppCompatActivity() {
                 dialogBinding.toText.backgroundTintList = ColorStateList.valueOf(Color.RED)
             } else {
                 if (morningButton) {
-                    binding.buttonMorning.text = "$from to $to"
+                    binding.buttonSlot1.text = "$from to $to"
                     morningButton = false
                 } else if (afternoonButton) {
-                    binding.buttonAfternoon.text = "$from to $to"
+                    binding.buttonSlot2.text = "$from to $to"
                     afternoonButton = false
                 } else if (eveningButton) {
-                    binding.buttonEvening.text = "$from to $to"
+                    binding.buttonSlot3.text = "$from to $to"
                     eveningButton = false
                 }
 
@@ -273,45 +285,106 @@ class AddLibraryActivity : AppCompatActivity() {
     }
 
 
-//
-//    private fun uploadImage() {
-//        if (uri == null) {
-//            Toast.makeText(this, "Please choose an image first", Toast.LENGTH_SHORT).show()
-//            return
-//        }
-//
-//        val progressDialog = ProgressDialog(this)
-//        progressDialog.setCancelable(false)
-//        progressDialog.setMessage("Wait while uploading photo")
-//        progressDialog.show()
-//
-//        val imageRef = storageRef.reference.child("library")
-//            .child("${System.currentTimeMillis()} ${auth.currentUser!!.uid}")
-//        imageRef.putFile(uri!!).addOnSuccessListener { task ->
-//            task.metadata?.reference?.downloadUrl?.addOnSuccessListener { uri ->
-//                photoUrl = uri.toString()
-//                binding.libImage.visibility = View.VISIBLE
-//                progressDialog.dismiss()
-//                Toast.makeText(
-//                    this, "Image Uploaded", Toast.LENGTH_SHORT
-//                ).show()
-//
-//                // Call function to add library here or update UI accordingly
-//            }?.addOnFailureListener {
-//                Toast.makeText(
-//                    this, "Error: ${it.message}", Toast.LENGTH_SHORT
-//                ).show()
-//                progressDialog.dismiss()
-//            }
-//        }.addOnFailureListener {
-//            Toast.makeText(
-//                this, "Error: ${it.message}", Toast.LENGTH_SHORT
-//            ).show()
-//            progressDialog.dismiss()
-//        }
-//    }
-//
-//
+    private fun uploadImage(
+        libName: String,
+        address: String,
+        pinCode: String,
+        state: String,
+        district: String,
+        seats: String,
+        owner: String,
+        bio: String,
+        buttonSlot1: String,
+        buttonSlot2: String,
+        buttonSlot3: String
+    ) {
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setCancelable(false)
+        progressDialog.setMessage("Wait while uploading photos")
+        progressDialog.show()
+
+        val totalImages = imagesUriList.size
+        var imagesUploaded = 0
+        val uploadedImageUrls = arrayListOf<String>()
+
+        imagesUriList.forEach { uri ->
+            val imageRef = storageRef.reference.child("library")
+                .child("${System.currentTimeMillis()} ${auth.currentUser!!.uid}")
+
+            imageRef.putFile(uri).addOnSuccessListener { task ->
+                task.metadata?.reference?.downloadUrl?.addOnSuccessListener { uri ->
+                    uploadedImageUrls.add(uri.toString())
+                    imagesUploaded++
+                    if (imagesUploaded == totalImages) {
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "All Images Uploaded", Toast.LENGTH_SHORT).show()
+                        sendLibraryEmail(
+                            libName,
+                            address,
+                            pinCode,
+                            state,
+                            district,
+                            seats,
+                            owner,
+                            bio,
+                            buttonSlot1,
+                            buttonSlot2,
+                            buttonSlot3,
+                            uploadedImageUrls
+                        )
+                    }
+                }?.addOnFailureListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener {
+                progressDialog.dismiss()
+                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun sendLibraryEmail(
+        libName: String,
+        address: String,
+        pinCode: String,
+        state: String,
+        district: String,
+        seats: String,
+        owner: String,
+        bio: String,
+        buttonSlot1: String,
+        buttonSlot2: String,
+        buttonSlot3: String,
+        photoUrlList: List<String>
+    ) {
+        val body = """
+        User Id: ${auth.currentUser!!.uid}    
+        Library Name: $libName
+        Address: $address
+        Pin Code: $pinCode
+        State: $state
+        District: $district
+        Seats: $seats
+        Owner: $owner
+        Amenities: $selectedFacilities
+        Bio: $bio
+        Slot 1 Time: $buttonSlot1
+        Slot 2 Time: $buttonSlot2
+        Slot 3 Time: $buttonSlot3
+        Images List: $photoUrlList
+    """.trimIndent()
+
+        callSendEmail(
+            EmailRequestModel(
+                "Request To Add Library",
+                From("indian.study.group@demomailtrap.com", "Library Add Request"),
+                "Library Add Request",
+                body,
+                listOf(To("indianstudygroup1@gmail.com"))
+            )
+        )
+    }
 
 
     private fun uploadImageDialog() {
@@ -428,21 +501,21 @@ class AddLibraryActivity : AppCompatActivity() {
         pinCodeViewModel.callPinCodeDetails(pincode)
     }
 
-    //
-//    private fun callAddLib(userId: String?, addLibraryRequestModel: AddLibraryRequestModel) {
-//        addLibViewModel.callAddLibrary(userId, addLibraryRequestModel)
-//    }
-//
+
+    private fun callSendEmail(emailRequestModel: EmailRequestModel) {
+        emailViewModel.postEmail(emailRequestModel)
+    }
+
     private fun observeProgress() {
-//        addLibViewModel.showProgress.observe(this, Observer {
-//            if (it) {
-//                binding.progressBar.visibility = View.VISIBLE
-//                binding.mainView.visibility = View.GONE
-//            } else {
-//                binding.progressBar.visibility = View.GONE
-//                binding.mainView.visibility = View.VISIBLE
-//            }
-//        })
+        emailViewModel.showProgress.observe(this, Observer {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.mainView.visibility = View.GONE
+            } else {
+                binding.progressBar.visibility = View.GONE
+                binding.mainView.visibility = View.VISIBLE
+            }
+        })
 
 
         pinCodeViewModel.showProgress.observe(this, Observer {
@@ -457,22 +530,35 @@ class AddLibraryActivity : AppCompatActivity() {
     }
 
     private fun observerErrorMessageApiResponse() {
-//        addLibViewModel.errorMessage.observe(this, Observer {
-//            ToastUtil.makeToast(this, it)
-//        })
+        emailViewModel.errorMessage.observe(this, Observer {
+            ToastUtil.makeToast(this, it)
+        })
         pinCodeViewModel.errorMessage.observe(this, Observer {
             ToastUtil.makeToast(this, it)
         })
     }
 
 
-//    private fun observerAddLibApiResponse() {
-//        addLibViewModel.addLibraryResponse.observe(this, Observer {
-//            Log.d("addLibraryResponseFromObserve", it.toString())
-//            ToastUtil.makeToast(this, "Library Added")
-//            finish()
-//        })
-//    }
+    private fun observerEmailApiResponse() {
+        emailViewModel.emailResponse.observe(this, Observer {
+            showErrorBottomDialog(
+                "Thank you for reaching out to us.\nWe have received your email and will be in touch with you shortly."
+            )
+        })
+    }
+
+    private fun showErrorBottomDialog(message: String) {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(false)
+        bottomDialog.show()
+        dialogBinding.messageTv.text = message
+        dialogBinding.continueButton.setOnClickListener {
+            bottomDialog.dismiss()
+            finish()
+        }
+    }
 
     private fun observerPincodeApiResponse() {
         pinCodeViewModel.pinCodeResponse.observe(this, Observer {

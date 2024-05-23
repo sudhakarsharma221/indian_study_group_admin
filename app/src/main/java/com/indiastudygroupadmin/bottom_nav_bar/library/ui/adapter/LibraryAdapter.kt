@@ -42,13 +42,16 @@ class LibraryAdapter(
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             )
             binding.add.setOnClickListener {
-                IntentUtil.startIntent(context, AddRegularStudentActivity())
+                val intent = Intent(context, AddRegularStudentActivity::class.java)
+                intent.putExtra("libraryData", library)
+                context.startActivity(intent)
             }
             binding.moreButton.setOnClickListener { view ->
                 showPopupMenu(view, position, library.id, library.name, library.id)
             }
+            val listOfWeekDays = arrayListOf("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
-            binding.rvDays.adapter = DaysAdapter(context, library.timing[0].days)
+            binding.rvDays.adapter = DaysAdapter(context, library.timing[0].days, listOfWeekDays)
 
             val seats = library.vacantSeats!!
 
@@ -123,7 +126,6 @@ class LibraryAdapter(
 //                3 -> {
 //                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
 //                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
-//
 //                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
 //
 //                    val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
@@ -222,16 +224,6 @@ class LibraryAdapter(
                     context.startActivity(intent)
                     true
                 }
-
-//                R.id.action_pause_slot -> {
-//                    // Implement your delete action here
-//                    true
-//                }
-//
-//                R.id.action_pause_id -> {
-//                    // Implement your delete action here
-//                    true
-//                }
 
                 else -> false
             }

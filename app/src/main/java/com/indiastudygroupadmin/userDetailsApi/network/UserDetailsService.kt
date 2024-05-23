@@ -5,6 +5,7 @@ import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPutRequestBodyMo
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserExistResponseModel
 import com.indiastudygroupadmin.app_utils.AppUrlsEndpoint
+import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsRequestModel
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -18,6 +19,12 @@ interface UserDetailsService {
     @GET(AppUrlsEndpoint.USERS_DETAILS)
     fun callGetUserDetails(
         @Header("userid") userId: String?
+    ): Call<UserDetailsResponseModel>
+
+
+    @GET(AppUrlsEndpoint.USERS_DETAILSID + "/{id}")
+    fun callGetUserDetailsById(
+        @Path("id") id: String?
     ): Call<UserDetailsResponseModel>
 
     @POST(AppUrlsEndpoint.USERS_DETAILS)

@@ -15,7 +15,7 @@ class RetrofitUtilClass {
         private lateinit var retrofit3: Retrofit
         private const val API_BASE_URL = "https://indian-study-group.onrender.com/"
         private const val PINCODE_BASE_URL = "https://api.postalpincode.in/"
-        private const val EMAIL_URL = "https://api.emailjs.com/"
+        private const val EMAIL_URL = "https://send.api.mailtrap.io/"
 
         fun getRetrofit(): Retrofit {
 

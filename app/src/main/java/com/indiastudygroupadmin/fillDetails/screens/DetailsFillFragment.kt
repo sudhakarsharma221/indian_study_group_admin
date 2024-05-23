@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.indiastudygroupadmin.R
+import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.FragmentDetailsFillBinding
 import com.indiastudygroupadmin.pincode.PinCodeViewModel
@@ -25,8 +26,7 @@ class DetailsFillFragment : Fragment() {
     private lateinit var district: String
     lateinit var state: String
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDetailsFillBinding.inflate(layoutInflater)
         // Inflate the layout for this fragment
@@ -41,6 +41,7 @@ class DetailsFillFragment : Fragment() {
         focusChangeListeners()
         return binding.root
     }
+
     private fun initListener() {
 
         binding.backButton.setOnClickListener {
@@ -58,6 +59,8 @@ class DetailsFillFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 val pincode = s.toString().trim()
                 if (pincode.length == 6) {
+                    HideKeyboard.hideKeyboard(requireContext(), binding.pincodeEt.windowToken)
+
                     callPincodeApi(pincode)
                 }
             }
@@ -84,8 +87,7 @@ class DetailsFillFragment : Fragment() {
             } else if (pincode.length < 6) {
                 binding.pincodeEt.error = "Enter Valid Pincode"
             } else {
-                findNavController().navigate(
-                    R.id.action_detailsFillFragment_to_photoFillFragment,
+                findNavController().navigate(R.id.action_detailsFillFragment_to_photoFillFragment,
                     Bundle().apply {
                         putString("name", name)
                         putString("pincode", pincode)
@@ -137,6 +139,7 @@ class DetailsFillFragment : Fragment() {
 
         })
     }
+
     private fun focusChangeListeners() {
 
         binding.nameEt.setOnFocusChangeListener { view, b ->

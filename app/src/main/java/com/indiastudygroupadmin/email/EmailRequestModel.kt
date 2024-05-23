@@ -1,6 +1,13 @@
 package com.indiastudygroupadmin.email
 
 data class EmailRequestModel(
-    val response: String? = null
+    val category: String, val from: From, val subject: String, val text: String, val to: List<To>
+)
 
+data class From(
+    val email: String, val name: String
+)
+
+data class To(
+    val email: String
 )

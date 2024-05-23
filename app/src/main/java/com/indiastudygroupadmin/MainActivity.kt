@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.indiastudygroupadmin.addLibrary.ui.AddLibraryActivity
+import com.indiastudygroupadmin.app_utils.ApiCallsConstant
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityMainBinding
@@ -48,5 +49,10 @@ class MainActivity : AppCompatActivity() {
         binding.addLibrary.setOnClickListener {
             IntentUtil.startIntent(this, AddLibraryActivity())
         }
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        ApiCallsConstant.apiCallsOnceHome = false
+        ApiCallsConstant.apiCallsOnceLibrary = false
     }
 }

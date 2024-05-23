@@ -3,7 +3,6 @@ package com.indiastudygroupadmin.bottom_nav_bar.library.ui
 import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +21,7 @@ import com.indiastudygroupadmin.message.ui.MessageActivity
 import com.indiastudygroupadmin.notification.ui.NotificationActivity
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
+import java.util.*
 
 class LibraryFragment : Fragment() {
 
@@ -32,6 +32,7 @@ class LibraryFragment : Fragment() {
     private lateinit var libraryDetailsViewModel: LibraryViewModel
     private lateinit var adapter: LibraryAdapter
     private lateinit var libraryList: ArrayList<LibraryResponseItem>
+    private val libraryIdQueue: Queue<String> = LinkedList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -42,8 +43,6 @@ class LibraryFragment : Fragment() {
         libraryList = arrayListOf()
         auth = FirebaseAuth.getInstance()
         requireActivity().window.statusBarColor = Color.WHITE
-
-//        inflater.inflate(R.layout.fragment_home, container, false)
 
         if (!ApiCallsConstant.apiCallsOnceHome) {
             userDetailsViewModel.callGetUserDetails(auth.currentUser!!.uid)
@@ -58,9 +57,7 @@ class LibraryFragment : Fragment() {
         return binding.root
     }
 
-
     private fun initListener() {
-
         binding.filterButton.setOnClickListener {
             showFilterDialog()
         }
@@ -73,28 +70,35 @@ class LibraryFragment : Fragment() {
         }
 
         if (!ApiCallsConstant.apiCallsOnceLibrary) {
-            for (libId in userData.libraries) {
-                callIdLibraryDetailsApi(libId)
-            }
+            userData.libraries.forEach { libraryIdQueue.add(it) }
+            processNextLibraryId()
             ApiCallsConstant.apiCallsOnceLibrary = true
         }
+
         binding.swiperefresh.setOnRefreshListener {
             libraryList.clear()
-            for (libId in userData.libraries) {
-                callIdLibraryDetailsApi(libId)
-            }
+            userData.libraries.forEach { libraryIdQueue.add(it) }
+            processNextLibraryId()
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
     }
 
-    private fun callIdLibraryDetailsApi(
-        id: String?
-    ) {
+    private fun processNextLibraryId() {
+        if (libraryIdQueue.isNotEmpty()) {
+            val nextLibraryId = libraryIdQueue.poll()
+            callIdLibraryDetailsApi(nextLibraryId)
+        } else {
+            adapter = LibraryAdapter(requireContext(), libraryList)
+            binding.recyclerView.adapter = adapter
+            adapter.notifyDataSetChanged()
+            binding.swiperefresh.isRefreshing = false
+        }
+    }
+
+    private fun callIdLibraryDetailsApi(id: String?) {
         libraryDetailsViewModel.callIdLibrary(id)
     }
-
 
     private fun observerUserDetailsApiResponse() {
         userDetailsViewModel.userDetailsResponse.observe(viewLifecycleOwner, Observer {
@@ -109,6 +113,7 @@ class LibraryFragment : Fragment() {
             binding.currentLocation.text = "${it.address?.district}, ${it.address?.state}"
             initListener()
             userDetailsViewModel.setUserDetailsResponse(it)
+            binding.swiperefresh.isRefreshing = false
         })
     }
 
@@ -147,27 +152,15 @@ class LibraryFragment : Fragment() {
             ToastUtil.makeToast(requireContext(), it)
         })
     }
+
     private fun observerIdLibraryApiResponse() {
         libraryDetailsViewModel.idLibraryResponse.observe(viewLifecycleOwner, Observer {
-            it.libData?.let { it1 -> libraryList.add(it1) }
-            adapter = LibraryAdapter(requireContext(), libraryList)
-            binding.recyclerView.adapter = adapter
-            adapter.notifyDataSetChanged()
-            binding.swiperefresh.isRefreshing = false
-
+            it.libData?.let { libraryItem -> libraryList.add(libraryItem) }
+            processNextLibraryId()
         })
     }
 
     private fun showFilterDialog() {
-//        val bottomDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
-//        val dialogBinding = FilterLibraryBottomDialogBinding.inflate(layoutInflater)
-//        bottomDialog.setContentView(dialogBinding.root)
-//        bottomDialog.setCancelable(true)
-//        bottomDialog.show()
-////        dialogBinding.messageTv.text = message
-////        dialogBinding.continueButton.setOnClickListener {
-////            HideKeyboard.hideKeyboard(requireContext(), binding.phoneEt.windowToken)
-////            bottomDialog.dismiss()
-////        }
+        // Implement the filter dialog display logic here if needed
     }
 }

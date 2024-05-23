@@ -9,6 +9,7 @@ import com.indiastudygroupadmin.bottom_nav_bar.library.repository.LibraryReposit
 object LibraryDetailData {
     var libDetailsResponseModel: LibraryIdDetailsResponseModel? = null
 }
+
 class LibraryViewModel : ViewModel() {
     var showProgress = MutableLiveData<Boolean>()
     var errorMessage = MutableLiveData<String>()
@@ -33,8 +34,8 @@ class LibraryViewModel : ViewModel() {
         repository.getIdDetailsResponse(id)
     }
 
-    fun callPincodeLibrary(pincode: String?) {
-        repository.getPincodeLibraryResponseDetailsResponse(pincode)
+    fun callPinCodeLibrary(pinCode: String?) {
+        repository.getPincodeLibraryResponseDetailsResponse(pinCode)
     }
 
     fun setLibraryDetailsResponse(response: LibraryIdDetailsResponseModel) {

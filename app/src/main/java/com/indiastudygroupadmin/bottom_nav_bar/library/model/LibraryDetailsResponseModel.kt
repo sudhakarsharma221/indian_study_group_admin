@@ -34,7 +34,10 @@ data class LibraryResponseItem(
     @SerializedName("_id") var id: String? = null,
     @SerializedName("name") var name: String? = null,
     @SerializedName("userid") var userid: String? = null,
+    @SerializedName("ownerName") var ownerName: String? = null,
+    @SerializedName("ownerPhoto") var ownerPhoto: String? = null,
     @SerializedName("contact") var contact: String? = null,
+    @SerializedName("history") var history: ArrayList<History>? = arrayListOf(),
     @SerializedName("photo") var photo: ArrayList<String>? = arrayListOf(),
     @SerializedName("seats") var seats: Int? = null,
     @SerializedName("vacantSeats") var vacantSeats: ArrayList<Int>? = arrayListOf(),
@@ -56,6 +59,11 @@ data class LibraryResponseItem(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        arrayListOf<History>().apply {
+            parcel.readList(this, History::class.java.classLoader)
+        },
         arrayListOf<String>().apply {
             parcel.readList(this, String::class.java.classLoader)
         },
@@ -89,7 +97,10 @@ data class LibraryResponseItem(
         parcel.writeString(id)
         parcel.writeString(name)
         parcel.writeString(userid)
+        parcel.writeString(ownerName)
+        parcel.writeString(ownerPhoto)
         parcel.writeString(contact)
+        parcel.writeList(history)
         parcel.writeList(photo)
         parcel.writeValue(seats)
         parcel.writeList(vacantSeats)
@@ -225,6 +236,46 @@ data class Address(
         }
 
         override fun newArray(size: Int): Array<Address?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+data class History(
+    @SerializedName("seatNo") var seatNo: Int? = null,
+    @SerializedName("date") var date: String? = null,
+    @SerializedName("slot") var slot: Int? = null,
+    @SerializedName("studentid") var studentId: String? = null,
+    @SerializedName("_id") var id: String? = null
+
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString(),
+        parcel.readString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(seatNo)
+        parcel.writeString(date)
+        parcel.writeValue(slot)
+        parcel.writeString(studentId)
+        parcel.writeString(id)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<History> {
+        override fun createFromParcel(parcel: Parcel): History {
+            return History(parcel)
+        }
+
+        override fun newArray(size: Int): Array<History?> {
             return arrayOfNulls(size)
         }
     }

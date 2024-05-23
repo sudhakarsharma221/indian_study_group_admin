@@ -10,14 +10,5 @@
         android:icon="@drawable/outline_info_24"
         android:iconTint="@color/black1"
         android:title="Library info" />
-<!--    <item-->
-<!--        android:id="@+id/action_pause_slot"-->
-<!--        android:icon="@drawable/outline_pause_circle_24"-->
-<!--        android:iconTint="@color/black1"-->
-<!--        android:title="Pause slot" />-->
-<!--    <item-->
-<!--        android:id="@+id/action_pause_id"-->
-<!--        android:icon="@drawable/outline_pause_circle_24"-->
-<!--        android:iconTint="@color/black1"-->
-<!--        android:title="Pause Id" />-->
+
 </menu>

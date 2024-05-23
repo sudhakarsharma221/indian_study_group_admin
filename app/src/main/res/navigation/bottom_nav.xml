@@ -12,7 +12,7 @@
 
     <fragment
         android:id="@+id/navigation_schedule"
-        android:name="com.indiastudygroupadmin.bottom_nav_bar.schedule.ui.ScheduleFragment"
+        android:name="com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.ScheduleFragment"
         android:label="Schedule"
         tools:layout="@layout/fragment_schedule" />
 

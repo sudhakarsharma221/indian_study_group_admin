@@ -52,6 +52,11 @@ class MoreFragment : Fragment() {
         requireActivity().window.statusBarColor = Color.WHITE
 
         initListener()
+        if (!ApiCallsConstant.apiCallsOnceMore) {
+            callPolicyDetails()
+            ApiCallsConstant.apiCallsOnceMore = true
+        }
+
 //        inflater.inflate(R.layout.fragment_profile, container, false)
         observeProgress()
         observerPolicyApiResponse()
@@ -61,7 +66,7 @@ class MoreFragment : Fragment() {
     }
 
     private fun initListener() {
-        callPolicyDetails()
+
 
         binding.tvWallet.setOnClickListener {
             IntentUtil.startIntent(requireContext(), WalletActivity())

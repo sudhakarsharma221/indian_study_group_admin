@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
 import com.indiastudygroupadmin.databinding.ActivityAddRegularStudentBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -18,12 +19,26 @@ class AddRegularStudentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddRegularStudentBinding
     private var selectedTimeFromList = ""
     private lateinit var selectedTimeButton: TextView
+    private lateinit var libraryData: LibraryResponseItem
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRegularStudentBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
-        initListener()
+        val receivedIntent = intent
+
+        if (receivedIntent.hasExtra("libraryData")) {
+            val userDetails: LibraryResponseItem? = receivedIntent.getParcelableExtra("libraryData")
+            userDetails?.let {
+                libraryData = it
+                initListener()
+                1
+            }
+        } else {
+            ToastUtil.makeToast(this, "Library Data not found")
+            finish()
+        }
         focusChangeListeners()
 
     }
@@ -34,22 +49,77 @@ class AddRegularStudentActivity : AppCompatActivity() {
             showDatePickerDialog()
         }
 
+        val timing = libraryData.timing
 
-        setButtonState(binding.buttonMorning, false)
-        setButtonState(binding.buttonAfternoon, false)
-        setButtonState(binding.buttonEvening, false)
+        when (timing.size) {
+            3 -> {
+                val timeStartFormatted2 = formatTime(timing[2].from?.toInt(), 0)
+                val timeEndFormatted2 = formatTime(timing[2].to?.toInt(), 0)
 
-        binding.buttonMorning.setOnClickListener {
-            binding.requireTime.visibility = View.GONE
-            toggleButtonState(binding.buttonMorning)
+                binding.buttonSlot3.text = "Slot 3 : $timeStartFormatted2 to $timeEndFormatted2"
+
+
+                val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
+                val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
+
+                binding.buttonSlot2.text = "Slot 2 : $timeStartFormatted1 to $timeEndFormatted1"
+
+
+                val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+                val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+
+                binding.buttonSlot1.text = "Slot 1 : $timeStartFormatted to $timeEndFormatted"
+            }
+
+            2 -> {
+
+
+                val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
+                val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
+
+                binding.buttonSlot2.text = "Slot 2 : $timeStartFormatted1 to $timeEndFormatted1"
+
+
+                val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+                val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+
+                binding.buttonSlot1.text = "Slot 1 : $timeStartFormatted to $timeEndFormatted"
+
+                binding.slot3.visibility = View.GONE
+                binding.buttonSlot3.visibility = View.GONE
+            }
+
+            1 -> {
+
+                val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
+                val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
+
+                binding.buttonSlot1.text = "Slot 1 : $timeStartFormatted to $timeEndFormatted"
+
+                binding.slot2.visibility = View.GONE
+                binding.slot3.visibility = View.GONE
+                binding.buttonSlot2.visibility = View.GONE
+                binding.buttonSlot3.visibility = View.GONE
+            }
         }
-        binding.buttonAfternoon.setOnClickListener {
+
+
+
+        setButtonState(binding.buttonSlot1, false)
+        setButtonState(binding.buttonSlot2, false)
+        setButtonState(binding.buttonSlot3, false)
+
+        binding.buttonSlot1.setOnClickListener {
             binding.requireTime.visibility = View.GONE
-            toggleButtonState(binding.buttonAfternoon)
+            toggleButtonState(binding.buttonSlot1)
         }
-        binding.buttonEvening.setOnClickListener {
+        binding.buttonSlot2.setOnClickListener {
             binding.requireTime.visibility = View.GONE
-            toggleButtonState(binding.buttonEvening)
+            toggleButtonState(binding.buttonSlot2)
+        }
+        binding.buttonSlot3.setOnClickListener {
+            binding.requireTime.visibility = View.GONE
+            toggleButtonState(binding.buttonSlot3)
         }
 
         binding.addStudentButton.setOnClickListener {
@@ -170,4 +240,11 @@ class AddRegularStudentActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun formatTime(hours: Int?, minutes: Int?): String {
+        val hourFormatted = if (hours == 0 || hours == 21) 12 else hours?.rem(12)
+        val amPm = if (hours!! < 12) "am" else "pm"
+        return String.format("%02d:%02d %s", hourFormatted, minutes, amPm)
+    }
+
 }

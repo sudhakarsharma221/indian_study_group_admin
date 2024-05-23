@@ -1,7 +1,8 @@
 package com.indiastudygroupadmin.email
 
+import com.google.gson.annotations.SerializedName
+
 data class EmailResponseModel(
-    val response: String? = null
-
-
+    @SerializedName("message_ids") val messageIds: ArrayList<String>? = arrayListOf(),
+    @SerializedName("success") val success: Boolean? = null
 )

@@ -118,26 +118,26 @@ class LibraryDetailsActivity : AppCompatActivity() {
 
     }
 
-    private fun showConfirmBookingDialog() {
-        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
-        bottomDialog.setContentView(dialogBinding.root)
-        bottomDialog.setCancelable(true)
-        bottomDialog.show()
-        dialogBinding.headingTv.visibility = View.VISIBLE
-        dialogBinding.messageTv.text =
-            "Your booking will be confirmed once library owner approves it. You can check it on your sessions "
-        dialogBinding.continueButton.setOnClickListener {
-            bottomDialog.dismiss()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 2 && resultCode == RESULT_OK) {
-            showConfirmBookingDialog()
-        }
-    }
+//    private fun showConfirmBookingDialog() {
+//        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+//        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
+//        bottomDialog.setContentView(dialogBinding.root)
+//        bottomDialog.setCancelable(true)
+//        bottomDialog.show()
+//        dialogBinding.headingTv.visibility = View.VISIBLE
+//        dialogBinding.messageTv.text =
+//            "Your booking will be confirmed once library owner approves it. You can check it on your sessions "
+//        dialogBinding.continueButton.setOnClickListener {
+//            bottomDialog.dismiss()
+//        }
+//    }
+//
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (requestCode == 2 && resultCode == RESULT_OK) {
+//            showConfirmBookingDialog()
+//        }
+//    }
 
     private fun showReviewDialog() {
 //        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
@@ -282,8 +282,11 @@ class LibraryDetailsActivity : AppCompatActivity() {
 
             binding.tvAddress.text =
                 "${libraryData.libData?.address?.street}, ${libraryData.libData?.address?.district}, ${libraryData.libData?.address?.state}, ${libraryData.libData?.address?.pincode}"
+            val listOfWeekDays = arrayListOf("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+
             listOfDays = libraryData.libData?.timing?.get(0)?.days
-            binding.rvDays.adapter = DaysAdapter(this, listOfDays!!)
+            binding.rvDays.adapter = DaysAdapter(this, listOfDays!!, listOfWeekDays)
+
 
 //            val timingStringBuilder = StringBuilder()
 //            timingStringBuilder.append("Time Slots : ")
