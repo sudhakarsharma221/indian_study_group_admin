@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".addLibrary.ui.AddLibraryActivity">
+    tools:context=".addLibrary.AddLibraryActivity">
 
     <ImageView
         android:id="@+id/backButton"
@@ -371,6 +371,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/seatsEt" />
 
+            <TextView
+                android:id="@+id/selectedAmenities"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Offers"
+                android:textColor="@color/gray_text_color"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/amenitiesButton"
                 android:layout_width="30dp"
@@ -391,7 +403,7 @@
                 android:textColor="@color/gray_text_color"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+                app:layout_constraintTop_toBottomOf="@+id/selectedAmenities" />
 
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -414,7 +426,7 @@
                 android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+                app:layout_constraintTop_toBottomOf="@+id/selectedAmenities" />
 
 
             <TextView

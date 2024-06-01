@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPostRequestBodyModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import com.indiastudygroupadmin.MainActivity
@@ -22,6 +23,7 @@ import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.databinding.ActivityOtpBinding
 import com.indiastudygroupadmin.fillDetails.FillUserDetailsActivity
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmTokenRequestBody
 import java.util.concurrent.TimeUnit
 
 class OtpActivity : AppCompatActivity() {
@@ -40,16 +42,22 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var phoneNo: String
     private lateinit var userName: String
     private lateinit var togoPhoneNo: String
+    private lateinit var fcmToken: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOtpBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        window.statusBarColor = Color.parseColor("#2f3133")
+        window.statusBarColor = Color.WHITE
         viewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
 
         auth = FirebaseAuth.getInstance()
         initListener()
-
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (it.isSuccessful) {
+                fcmToken = it.result.toString()
+            }
+        }
 
         observerUserDetailsApiResponse()
         observeProgress()
@@ -191,14 +199,33 @@ class OtpActivity : AppCompatActivity() {
 
     private fun observerUserDetailsApiResponse() {
         viewModel.userDetailsResponse.observe(this, Observer {
-            if (it.name?.trim().isNullOrEmpty() || it.address?.pincode.isNullOrEmpty()) {
+
+            if (!it.devices.contains(fcmToken)) {
+                viewModel.callPostFcmToken(
+                    auth.currentUser!!.uid, AddFcmTokenRequestBody(
+                        fcmToken, "library"
+                    )
+                )
+            }
+
+            if (fromSignUp == true) {
                 IntentUtil.startIntent(this@OtpActivity, FillUserDetailsActivity())
                 cancelCountdownTimer()
                 finish()
+
+                ToastUtil.makeToast(this, "Successful Sign Up")
             } else {
-                IntentUtil.startIntent(this@OtpActivity, MainActivity())
-                cancelCountdownTimer()
-                finish()
+                if (it.name?.trim().isNullOrEmpty() || it.address?.pincode.isNullOrEmpty()) {
+                    ToastUtil.makeToast(this, "Successful Log In")
+                    IntentUtil.startIntent(this@OtpActivity, FillUserDetailsActivity())
+                    cancelCountdownTimer()
+                    finish()
+                } else {
+                    ToastUtil.makeToast(this, "Successful Log In")
+                    IntentUtil.startIntent(this@OtpActivity, MainActivity())
+                    cancelCountdownTimer()
+                    finish()
+                }
             }
         })
     }
@@ -223,20 +250,18 @@ class OtpActivity : AppCompatActivity() {
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 if (fromSignUp == true) {
-                    Log.d("USERIDFROMSIGNUP", auth.currentUser!!.uid)
                     callPostUserDetailsApi(
                         UserDetailsPostRequestBodyModel(
-                            auth.currentUser!!.uid, togoPhoneNo, "library owner", "library owner",userName
+                            auth.currentUser!!.uid,
+                            togoPhoneNo,
+                            "library owner",
+                            "library owner",
+                            userName
                         )
                     )
-                    IntentUtil.startIntent(this@OtpActivity, FillUserDetailsActivity())
-                    cancelCountdownTimer()
-                    finish()
 
-                    ToastUtil.makeToast(this, "Successful Sign Up")
 
                 } else {
-                    ToastUtil.makeToast(this, "Successful Log In")
                     callGetUserDetailsApi(auth.currentUser!!.uid)
                 }
                 // Sign in success, update UI with the signed-in user's information

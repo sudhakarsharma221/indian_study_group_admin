@@ -1,6 +1,7 @@
 package com.indiastudygroupadmin.editLibraryRequest
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -16,9 +17,11 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -29,16 +32,19 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.indiastudygroupadmin.R
-import com.indiastudygroupadmin.addLibrary.ui.adapter.ImageAdapter
+import com.indiastudygroupadmin.addLibrary.adapter.ImageAdapter
 import com.indiastudygroupadmin.app_utils.TimePickerCustomDialog
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.AmenityItem
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter.AmenitiesAdapter
 import com.indiastudygroupadmin.databinding.ActivityEditLibraryRequestBinding
 import com.indiastudygroupadmin.databinding.AddTimingBottomDialogBinding
 import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
 import com.indiastudygroupadmin.email.EmailRequestModel
 import com.indiastudygroupadmin.email.EmailViewModel
-import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
+import com.indiastudygroupadmin.email.From
+import com.indiastudygroupadmin.email.To
 
 class EditLibraryRequestActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditLibraryRequestBinding
@@ -53,7 +59,49 @@ class EditLibraryRequestActivity : AppCompatActivity() {
     private lateinit var emailViewModel: EmailViewModel
     private var imagesUriList = ArrayList<Uri>()
     private lateinit var adapter: ImageAdapter
-    private var itemsCount = 0
+    private var itemsCount = 3
+    private var selectedFacilities: ArrayList<String>? = arrayListOf()
+
+    private val amenityMappings = mapOf(
+        "AC" to Pair("Air Conditioning", R.drawable.ac),
+        "Studyspace" to Pair("Study Space", R.drawable.study),
+        "Wifi" to Pair("Wi-Fi", R.drawable.wifi),
+        "Printing" to Pair("Printing", R.drawable.printing),
+        "Charging" to Pair("Charging Station", R.drawable.charging),
+        "Groupstudyroom" to Pair("Group Study Room", R.drawable.groupstudy),
+        "Refreshment" to Pair("Refreshment Area", R.drawable.refreshment),
+        "Studyarea" to Pair("Study Area", R.drawable.study),
+        "Books" to Pair("Books and Magazines", R.drawable.books),
+        "Computer" to Pair("Computer", R.drawable.computer)
+    )
+
+
+    private val facilitiesList = arrayOf(
+        "AC",
+        "Studyspace",
+        "Wifi",
+        "Printing",
+        "Charging",
+        "Groupstudyroom",
+        "Refreshment",
+        "Books",
+        "Computer",
+    )
+
+    //    private val facilitiesList2 = arrayOf(
+//        "AC",
+//        "Study Spaces",
+//        "Wi-Fi",
+//        "Printing Services",
+//        "Charging Stations",
+//        "Group Study Rooms",
+//        "Refreshment",
+//        "Books",
+//        "Computers",
+//    )
+    private val checkedFacilities =
+        BooleanArray(facilitiesList.size) // Initialize with the same length as topicsList
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEditLibraryRequestBinding.inflate(layoutInflater)
@@ -86,6 +134,12 @@ class EditLibraryRequestActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
+        binding.amenitiesRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        binding.amenitiesButton.setOnClickListener {
+            chooseFacilitiesDialog()
+        }
+
         binding.imageRecyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ImageAdapter(this, imagesUriList)
 
@@ -93,7 +147,7 @@ class EditLibraryRequestActivity : AppCompatActivity() {
             0 -> itemsCount = 3
             1 -> itemsCount = 2
             2 -> itemsCount = 1
-            3 -> itemsCount = 0
+            else -> binding.addImage.visibility = View.GONE
         }
 
         pickMedia =
@@ -111,13 +165,10 @@ class EditLibraryRequestActivity : AppCompatActivity() {
             }
 
 
-
         binding.libNameEt.setText(libraryData.name)
         binding.seats.setText(libraryData.seats.toString())
         binding.ownerEt.setText(libraryData.ownerName)
         binding.bioEt.setText(libraryData.bio)
-
-
 
         binding.buttonSlot1.setOnClickListener {
             morningButton = true
@@ -184,16 +235,13 @@ class EditLibraryRequestActivity : AppCompatActivity() {
             }
         }
 
-
         val amenities = libraryData.ammenities
-        val drawable = ContextCompat.getDrawable(this, R.drawable.baseline_air_24)
-        if (drawable != null) {
-            setAmenitiesWithDrawable(binding.amenitiesRecyclerView, amenities, drawable)
+        if (amenities != null) {
+            val allAmenities = getAmenitiesWithDrawable(amenities, amenityMappings)
+            val adapter = AmenitiesAdapter(this, allAmenities)
+            binding.amenitiesRecyclerView.adapter = adapter
+            //                setAmenitiesWithDrawable(binding.tvAmmenities, amenities)
         }
-
-
-
-
 
         binding.addImage.setOnClickListener {
             uploadImageDialog()
@@ -202,22 +250,16 @@ class EditLibraryRequestActivity : AppCompatActivity() {
             finish()
         }
 
-
-
-
-
-
         binding.sendRequestButton.setOnClickListener {
 
             val libName = binding.libNameEt.text.toString()
             val seats = binding.seats.text.toString()
             val owner = binding.ownerEt.text.toString()
             val bio = binding.bioEt.text.toString()
+            val changes = binding.changeEt.text.toString()
             val buttonSlot1 = binding.buttonSlot1.text.toString()
             val buttonSlot2 = binding.buttonSlot2.text.toString()
             val buttonSlot3 = binding.buttonSlot3.text.toString()
-
-
 
             if (libName.trim().isEmpty()) {
                 binding.libNameEt.error = "Empty Field"
@@ -235,35 +277,134 @@ class EditLibraryRequestActivity : AppCompatActivity() {
                 binding.ownerEt.error = "Enter less than 30 characters"
             } else if (buttonSlot1 == "Set Slot 1 Time" && buttonSlot2 == "Set Slot 2 Time" && buttonSlot3 == "Set Slot 3 Time") {
                 binding.requireTime.visibility = View.VISIBLE
+            } else if (changes.trim().isEmpty()) {
+                binding.changeEt.error = "Empty Field"
+            } else if (imagesUriList.size > 3) {
+                ToastUtil.makeToast(this, "Select Maximum Of 3 Images")
             } else {
-                val recipient = "indianstudygroup1@gmail.com"
-                val subject = "Request To Add The Library"
-                val body = """
-                Library Name: $libName
-                Seats: $seats
-                Owner: $owner
-                Bio: $bio
-                Slot 1 Time: $buttonSlot1
-                Slot 2 Time: $buttonSlot2
-                Slot 3 Time: $buttonSlot3
-            """.trimIndent()
+                if (imagesUriList.isNotEmpty()) {
+                    uploadImage(
+                        libName,
+                        libraryData.address?.street!!,
+                        libraryData.address?.pincode!!,
+                        libraryData.address?.state!!,
+                        libraryData.address?.district!!,
+                        seats,
+                        owner,
+                        bio,
+                        changes,
+                        buttonSlot1,
+                        buttonSlot2,
+                        buttonSlot3
+                    )
+                } else {
+                    sendLibraryEmail(
+                        libName,
+                        libraryData.address?.street!!,
+                        libraryData.address?.pincode!!,
+                        libraryData.address?.state!!,
+                        libraryData.address?.district!!,
+                        seats,
+                        owner,
+                        bio,
+                        changes,
+                        buttonSlot1,
+                        buttonSlot2,
+                        buttonSlot3,
+                        arrayListOf()
+                    )
+                }
 
-                val emailIntent = Intent(Intent.ACTION_SEND).apply {
-                    data = Uri.parse("mailto:") // Only email apps should handle this
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_EMAIL, arrayOf(recipient))
-                    putExtra(Intent.EXTRA_SUBJECT, subject)
-                    putExtra(Intent.EXTRA_TEXT, body)
-                }
-                try {
-                    startActivity(Intent.createChooser(emailIntent, "Send Email"))
-                } catch (e: Exception) {
-                    e.localizedMessage?.let { it1 -> ToastUtil.makeToast(this, it1) }
-                }
+
             }
         }
 
 
+    }
+
+
+    private fun uploadImage(
+        libName: String,
+        address: String,
+        pinCode: String,
+        state: String,
+        district: String,
+        seats: String,
+        owner: String,
+        bio: String,
+        changes: String,
+        buttonSlot1: String,
+        buttonSlot2: String,
+        buttonSlot3: String
+    ) {
+        val progressDialog = ProgressDialog(this)
+        progressDialog.setCancelable(false)
+        progressDialog.setMessage("Wait while uploading photos")
+        progressDialog.show()
+
+        val totalImages = imagesUriList.size
+        var imagesUploaded = 0
+        val uploadedImageUrls = arrayListOf<String>()
+
+        imagesUriList.forEach { uri ->
+            val imageRef = storageRef.reference.child("library")
+                .child("${System.currentTimeMillis()} ${auth.currentUser!!.uid}")
+
+            imageRef.putFile(uri).addOnSuccessListener { task ->
+                task.metadata?.reference?.downloadUrl?.addOnSuccessListener { uri ->
+                    uploadedImageUrls.add(uri.toString())
+                    imagesUploaded++
+                    if (imagesUploaded == totalImages) {
+                        progressDialog.dismiss()
+                        Toast.makeText(this, "All Images Uploaded", Toast.LENGTH_SHORT).show()
+                        sendLibraryEmail(
+                            libName,
+                            address,
+                            pinCode,
+                            state,
+                            district,
+                            seats,
+                            owner,
+                            bio,
+                            changes,
+                            buttonSlot1,
+                            buttonSlot2,
+                            buttonSlot3,
+                            uploadedImageUrls
+                        )
+                    }
+                }?.addOnFailureListener {
+                    progressDialog.dismiss()
+                    Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener {
+                progressDialog.dismiss()
+                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getAmenitiesWithDrawable(
+        amenities: List<String>?, amenityMappings: Map<String, Pair<String, Int>>
+    ): List<AmenityItem> {
+        val amenityItems = mutableListOf<AmenityItem>()
+
+        if (amenities == null) {
+            return amenityItems
+        }
+
+        amenities.forEach { amenityId ->
+            val amenityData = amenityMappings[amenityId]
+            if (amenityData != null) {
+                val (label, drawableResId) = amenityData
+                val drawable = ContextCompat.getDrawable(this, drawableResId)
+                if (drawable != null) {
+                    amenityItems.add(AmenityItem(label, drawable))
+                }
+            }
+        }
+
+        return amenityItems
     }
 
     private fun showAddTimingsBottomDialog() {
@@ -310,31 +451,48 @@ class EditLibraryRequestActivity : AppCompatActivity() {
         }
     }
 
-    private fun setAmenitiesWithDrawable(
-        textView: TextView, amenities: List<String>?, drawable: Drawable
+    private fun sendLibraryEmail(
+        libName: String,
+        address: String,
+        pinCode: String,
+        state: String,
+        district: String,
+        seats: String,
+        owner: String,
+        bio: String,
+        changes: String,
+        buttonSlot1: String,
+        buttonSlot2: String,
+        buttonSlot3: String,
+        photoUrlList: List<String>
     ) {
-        if (amenities == null) {
-            binding.amenitiesRecyclerView.text = ""
-            return
-        }
+        val body = """
+        User Id       : ${auth.currentUser!!.uid}    
+        Library Name  : $libName
+        Address       : $address
+        Pin Code      : $pinCode
+        State         : $state
+        District      : $district
+        Seats         : $seats
+        Owner         : $owner
+        Amenities     : $selectedFacilities
+        Bio           : $bio
+        Changes Made  : $changes
+        Slot 1 Time   : $buttonSlot1
+        Slot 2 Time   : $buttonSlot2
+        Slot 3 Time   : $buttonSlot3
+        Images List   : $photoUrlList        
+    """.trimIndent()
 
-        val spannableStringBuilder = SpannableStringBuilder()
-
-        amenities.forEach { amenity ->
-            val spannableString = SpannableString(" $amenity\n")
-
-            // Adjust drawable size if needed
-            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-
-            // Create an ImageSpan and set it to the SpannableString
-            val imageSpan = ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM)
-            spannableString.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            // Append this spannableString to the builder
-            spannableStringBuilder.append(spannableString)
-        }
-
-        binding.amenitiesRecyclerView.text = spannableStringBuilder
+        callSendEmail(
+            EmailRequestModel(
+                "Request To Edit Library",
+                From("indian.study.group@demomailtrap.com", "Library Edit Request"),
+                "Library Edit Request",
+                body,
+                listOf(To("indianstudygroup1@gmail.com"))
+            )
+        )
     }
 
     private fun uploadImageDialog() {
@@ -378,6 +536,47 @@ class EditLibraryRequestActivity : AppCompatActivity() {
         })
 
 
+    }
+
+    private fun chooseFacilitiesDialog() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Select Items").setMultiChoiceItems(
+            facilitiesList, checkedFacilities
+        ) { dialog, which, isChecked ->
+            checkedFacilities[which] = isChecked
+        }.setPositiveButton("OK") { dialog, which ->
+            // Check if none of the options is selected
+            if (checkedFacilities.all { !it }) {
+                Toast.makeText(
+                    applicationContext, "Please select at least one item", Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                // User clicked OK and at least one item is selected
+                selectedFacilities?.clear()
+                for (i in checkedFacilities.indices) {
+                    if (checkedFacilities[i]) {
+                        selectedFacilities?.add(facilitiesList[i])
+                    }
+                }
+                if (selectedFacilities?.isNotEmpty() == true) {
+                    val allAmenities =
+                        getAmenitiesWithDrawable(selectedFacilities!!.distinct(), amenityMappings)
+                    val adapter = AmenitiesAdapter(this, allAmenities)
+                    binding.amenitiesRecyclerView.adapter = adapter
+                    adapter.notifyDataSetChanged()
+                }
+            }
+        }.setNegativeButton("Cancel") { dialog, which ->
+            // User cancelled the dialog
+            dialog.dismiss()
+        }.setNeutralButton("Clear All") { dialog, which ->
+            // Clear all selections
+            checkedFacilities.fill(false)
+        }
+        // Create and show the AlertDialog
+        val dialog = builder.create()
+        dialog.show()
     }
 
     private fun observerErrorMessageApiResponse() {

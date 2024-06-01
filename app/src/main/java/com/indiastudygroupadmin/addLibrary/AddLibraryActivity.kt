@@ -1,8 +1,7 @@
-package com.indiastudygroupadmin.addLibrary.ui
+package com.indiastudygroupadmin.addLibrary
 
 import android.app.Dialog
 import android.app.ProgressDialog
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
@@ -28,7 +27,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
 import com.indiastudygroupadmin.R
-import com.indiastudygroupadmin.addLibrary.ui.adapter.ImageAdapter
+import com.indiastudygroupadmin.addLibrary.adapter.ImageAdapter
 import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.TimePickerCustomDialog
 import com.indiastudygroupadmin.app_utils.ToastUtil
@@ -57,16 +56,18 @@ class AddLibraryActivity : AppCompatActivity() {
 
     private val facilitiesList = arrayOf(
         "AC",
-        "Books",
-        "Water",
         "Study Spaces",
-        "Computers",
         "Wi-Fi",
-        "Restrooms",
         "Printing Services",
-        "Reference Materials",
         "Charging Stations",
-        "Group Study Rooms"
+        "Group Study Rooms",
+        "Refreshment",
+        "Books",
+//        "Water",
+        "Computers",
+
+//        "Reference Materials",
+
     )
     private val checkedFacilities =
         BooleanArray(facilitiesList.size) // Initialize with the same length as topicsList
@@ -203,6 +204,8 @@ class AddLibraryActivity : AppCompatActivity() {
                 binding.ownerEt.error = "Enter less than 30 characters"
             } else if (buttonSlot1 == "Set Slot 1 Time" && buttonSlot2 == "Set Slot 2 Time" && buttonSlot3 == "Set Slot 3 Time") {
                 binding.requireTime.visibility = View.VISIBLE
+            } else if (imagesUriList.size > 3) {
+                ToastUtil.makeToast(this, "Select Maximum Of 3 Images")
             } else {
                 if (imagesUriList.isNotEmpty()) {
                     uploadImage(
@@ -359,20 +362,20 @@ class AddLibraryActivity : AppCompatActivity() {
         photoUrlList: List<String>
     ) {
         val body = """
-        User Id: ${auth.currentUser!!.uid}    
-        Library Name: $libName
-        Address: $address
-        Pin Code: $pinCode
-        State: $state
-        District: $district
-        Seats: $seats
-        Owner: $owner
-        Amenities: $selectedFacilities
-        Bio: $bio
-        Slot 1 Time: $buttonSlot1
-        Slot 2 Time: $buttonSlot2
-        Slot 3 Time: $buttonSlot3
-        Images List: $photoUrlList
+        User Id       : ${auth.currentUser!!.uid}    
+        Library Name  : $libName
+        Address       : $address
+        Pin Code      : $pinCode
+        State         : $state
+        District      : $district
+        Seats         : $seats
+        Owner         : $owner
+        Amenities     : $selectedFacilities
+        Bio           : $bio
+        Slot 1 Time   : $buttonSlot1
+        Slot 2 Time   : $buttonSlot2
+        Slot 3 Time   : $buttonSlot3
+        Images List   : $photoUrlList
     """.trimIndent()
 
         callSendEmail(
@@ -425,6 +428,10 @@ class AddLibraryActivity : AppCompatActivity() {
                     if (checkedFacilities[i]) {
                         selectedFacilities?.add(facilitiesList[i])
                     }
+                }
+                if (selectedFacilities?.isNotEmpty() == true) {
+                    binding.selectedAmenities.visibility = View.VISIBLE
+                    binding.selectedAmenities.text = selectedFacilities.toString()
                 }
             }
         }.setNegativeButton("Cancel") { dialog, which ->

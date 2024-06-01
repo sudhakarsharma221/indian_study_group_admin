@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -18,6 +19,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.Observer
@@ -29,14 +31,26 @@ import com.codebyashish.autoimageslider.Enums.ImageScaleType
 import com.codebyashish.autoimageslider.Interfaces.ItemsListener
 import com.codebyashish.autoimageslider.Models.ImageSlidesModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.HideStatusBarUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.AmenityItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryIdDetailsResponseModel
+import com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter.AmenitiesAdapter
 import com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter.DaysAdapter
+import com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter.ReviewAdapter
 import com.indiastudygroupadmin.bottom_nav_bar.library.viewModel.LibraryViewModel
 import com.indiastudygroupadmin.databinding.ActivityLibraryDetailsBinding
+import com.indiastudygroupadmin.databinding.DeleteLibraryBottomDialogBinding
 import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
+import com.indiastudygroupadmin.databinding.ReviewBottomDialogBinding
 import com.indiastudygroupadmin.editLibraryRequest.EditLibraryRequestActivity
+import com.indiastudygroupadmin.email.EmailRequestModel
+import com.indiastudygroupadmin.email.EmailViewModel
+import com.indiastudygroupadmin.email.From
+import com.indiastudygroupadmin.email.To
+import com.indiastudygroupadmin.rating.ui.ReviewActivity
 import java.io.File
 
 class LibraryDetailsActivity : AppCompatActivity() {
@@ -44,36 +58,57 @@ class LibraryDetailsActivity : AppCompatActivity() {
     private lateinit var viewModel: LibraryViewModel
     private lateinit var libraryId: String
     private var latitude: Double? = null
+    private lateinit var auth: FirebaseAuth
     private var longitude: Double? = null
+    private lateinit var emailViewModel: EmailViewModel
     private var isExpanded = false
     private lateinit var libImageList: ArrayList<ImageSlidesModel>
     private var listener: ItemsListener? = null
+    private lateinit var libraryDetails: LibraryIdDetailsResponseModel
     private var listOfDays: ArrayList<String>? = arrayListOf()
+    val amenityMappings = mapOf(
+        "AC" to Pair("Air Conditioning", R.drawable.ac),
+        "Studyspace" to Pair("Study Space", R.drawable.study),
+        "Wifi" to Pair("Wi-Fi", R.drawable.wifi),
+        "Printing" to Pair("Printing", R.drawable.printing),
+        "Charging" to Pair("Charging Station", R.drawable.charging),
+        "Groupstudyroom" to Pair("Group Study Room", R.drawable.groupstudy),
+        "Refreshment" to Pair("Refreshment Area", R.drawable.refreshment),
+        "Studyarea" to Pair("Study Area", R.drawable.study),
+        "Books" to Pair("Books and Magazines", R.drawable.books),
+        "Computer" to Pair("Computer", R.drawable.computer)
+    )
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         HideStatusBarUtil.hideStatusBar(this)
         binding = ActivityLibraryDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
+        emailViewModel = ViewModelProvider(this)[EmailViewModel::class.java]
 //        window.statusBarColor = Color.parseColor("#2f3133")
         libImageList = ArrayList()
+        auth = FirebaseAuth.getInstance()
 
         viewModel = ViewModelProvider(this@LibraryDetailsActivity)[LibraryViewModel::class.java]
         libraryId = intent.getStringExtra("LibraryId").toString()
         callIdLibraryDetailsApi(libraryId)
 
         initListener()
+        observerEmailApiResponse()
         observeProgress()
         observerIdLibraryApiResponse()
         observerErrorMessageApiResponse()
     }
 
     private fun initListener() {
+        binding.reviewRecyclerView.layoutManager = LinearLayoutManager(this)
 
         binding.rvDays.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.tvAmmenities.layoutManager = LinearLayoutManager(this)
+
 //        binding.readMore.setOnClickListener {
 //            if (isExpanded) {
 //                // Collapse the bio
@@ -103,7 +138,9 @@ class LibraryDetailsActivity : AppCompatActivity() {
             showReviewDialog()
         }
 
-
+        binding.delete.setOnClickListener {
+            showDeleteBottomDialog()
+        }
         binding.backButton.setOnClickListener {
             finish()
         }
@@ -115,6 +152,56 @@ class LibraryDetailsActivity : AppCompatActivity() {
                 latitude, longitude
             )
         }
+
+    }
+
+    private fun showDeleteBottomDialog() {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = DeleteLibraryBottomDialogBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(true)
+        bottomDialog.show()
+
+        dialogBinding.tvLibraryOwnerName.text = libraryDetails.libData?.ownerName
+//
+        Glide.with(this).load(libraryDetails.libData?.ownerPhoto).placeholder(R.drawable.profile)
+            .error(R.drawable.profile).into(dialogBinding.libraryOwnerPhoto)
+
+        dialogBinding.submitButton.setOnClickListener {
+            val deleteText = dialogBinding.reviewEt.text.toString()
+            if (deleteText.trim().isEmpty()) {
+                dialogBinding.reviewEt.error = "Empty Field"
+            } else {
+
+
+                val body = """
+        User Id       : ${auth.currentUser!!.uid}    
+        Library Name  : ${libraryDetails.libData?.name}
+        Address       : ${libraryDetails.libData?.address?.street}
+        Pin Code      : ${libraryDetails.libData?.address?.pincode}
+        State         : ${libraryDetails.libData?.address?.state}
+        District      : ${libraryDetails.libData?.address?.district}
+        Seats         : ${libraryDetails.libData?.seats}
+        Owner         : ${libraryDetails.libData?.ownerName}
+        Amenities     : ${libraryDetails.libData?.ammenities}
+        Bio           : ${libraryDetails.libData?.bio}
+        Delete Reason :  $deleteText
+    """.trimIndent()
+
+
+                bottomDialog.dismiss()
+                callSendEmail(
+                    EmailRequestModel(
+                        "Request To Delete Library",
+                        From("indian.study.group@demomailtrap.com", "Library Delete Request"),
+                        "Library Delete Request",
+                        body,
+                        listOf(To("indianstudygroup1@gmail.com"))
+                    )
+                )
+            }
+        }
+
 
     }
 
@@ -139,29 +226,54 @@ class LibraryDetailsActivity : AppCompatActivity() {
 //        }
 //    }
 
-    private fun showReviewDialog() {
-//        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-//        val dialogBinding = ReviewBottomDialogBinding.inflate(layoutInflater)
-//        bottomDialog.setContentView(dialogBinding.root)
-//        bottomDialog.setCancelable(true)
-//        bottomDialog.show()
-////        dialogBinding.messageTv.text = message
-////        dialogBinding.continueButton.setOnClickListener {
-////            HideKeyboard.hideKeyboard(requireContext(), binding.phoneEt.windowToken)
-////            bottomDialog.dismiss()
-////        }
-    }
-
     private fun callIdLibraryDetailsApi(
         id: String?
     ) {
         viewModel.callIdLibrary(id)
     }
 
+    private fun showReviewDialog() {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = ReviewBottomDialogBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(true)
+        bottomDialog.show()
+        var ratingValue = 0f
+        dialogBinding.ratingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            dialogBinding.error.visibility = View.GONE
+            if (fromUser) {
+                ratingValue = rating
+            }
+        }
+
+
+        dialogBinding.tvLibraryOwnerName.text = libraryDetails.libData?.ownerName
+//
+        Glide.with(this).load(libraryDetails.libData?.ownerPhoto).placeholder(R.drawable.profile)
+            .error(R.drawable.profile).into(dialogBinding.libraryOwnerPhoto)
+
+        dialogBinding.submitButton.setOnClickListener {
+            val reviewText = dialogBinding.reviewEt.text.toString()
+            if (reviewText.trim().isEmpty()) {
+                dialogBinding.reviewEt.error = "Empty Field"
+            } else if (ratingValue == 0f) {
+                dialogBinding.error.visibility = View.VISIBLE
+            } else {
+                ToastUtil.makeToast(this, "Review Posted\nRated: ${ratingValue.toInt()} stars")
+            }
+        }
+//        dialogBinding.messageTv.text = message
+//        dialogBinding.continueButton.setOnClickListener {
+//            HideKeyboard.hideKeyboard(requireContext(), binding.phoneEt.windowToken)
+//            bottomDialog.dismiss()
+//        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun observerIdLibraryApiResponse() {
         viewModel.idLibraryResponse.observe(this, Observer { libraryData ->
 //            viewModel.setLibraryDetailsResponse(it)
-
+            libraryDetails = libraryData
 
             latitude = libraryData.libData?.address?.latitude?.toDouble()
             longitude = libraryData.libData?.address?.longitude?.toDouble()
@@ -186,6 +298,50 @@ class LibraryDetailsActivity : AppCompatActivity() {
             binding.tvName.text = libraryData.libData?.name
             binding.tvBio.text = libraryData.libData?.bio
             val seats = libraryData.libData?.vacantSeats!!
+
+            binding.tvReviews.text = "${libraryData.libData?.reviews?.size} Reviews"
+            binding.tvReviews.setOnClickListener {
+
+                if (libraryData.libData?.reviews?.isEmpty() == true) {
+                    ToastUtil.makeToast(this, "No Reviews")
+                } else {
+                    val intent = Intent(this, ReviewActivity::class.java)
+                    intent.putExtra("Reviews", libraryData.libData?.reviews)
+                    startActivity(intent)
+                }
+
+            }
+            val adapter = libraryData.libData?.reviews?.let { ReviewAdapter(this, it) }
+            binding.reviewRecyclerView.adapter = adapter
+            var rating = 1f
+            if (libraryData.libData?.rating?.count == 0) {
+                binding.tvRating.text = "1.0"
+            } else {
+                if (libraryData.libData?.rating?.count == null) {
+                    binding.tvRating.text = "1.0"
+                } else {
+                    Log.d("RATING", rating.toInt().toString())
+
+
+                    rating = (libraryData.libData?.rating?.count?.toFloat()?.let {
+                        libraryData.libData?.rating?.totalRatings?.toFloat()?.div(
+                            it
+                        )
+                    })?.toFloat()!!
+
+                    Log.d("RATINGG", rating.toString())
+                }
+
+            }
+            binding.tvRating.text = String.format("%.1f", rating)
+            if (libraryData.libData?.rating?.count == null) {
+                binding.basedOnReview.text = "Based On 0 Reviews"
+            } else {
+                binding.basedOnReview.text =
+                    "Based On ${libraryData.libData?.rating?.count} Reviews"
+            }
+
+            binding.ratingBar.rating = rating
 
             when (seats.size) {
                 3 -> {
@@ -267,18 +423,14 @@ class LibraryDetailsActivity : AppCompatActivity() {
                 }
             }
 
-
             val amenities = libraryData.libData?.ammenities
-            val drawable = ContextCompat.getDrawable(this, R.drawable.baseline_air_24)
-            if (drawable != null) {
-                setAmenitiesWithDrawable(binding.tvAmmenities, amenities, drawable)
+            if (amenities != null) {
+                val allAmenities = getAmenitiesWithDrawable(amenities, amenityMappings)
+                val adapter = AmenitiesAdapter(this, allAmenities)
+                binding.tvAmmenities.adapter = adapter
+                //                setAmenitiesWithDrawable(binding.tvAmmenities, amenities)
             }
 
-//            binding.tvAmmenities.text = libraryData.libData?.ammenities?.joinToString("\n")
-//            binding.tvPrice.text = HtmlCompat.fromHtml(
-//                "<b>Daily Charge : </b> ₹${it.pricing?.daily}<br/>",
-//                HtmlCompat.FROM_HTML_MODE_LEGACY
-//            )
 
             binding.tvAddress.text =
                 "${libraryData.libData?.address?.street}, ${libraryData.libData?.address?.district}, ${libraryData.libData?.address?.state}, ${libraryData.libData?.address?.pincode}"
@@ -308,31 +460,27 @@ class LibraryDetailsActivity : AppCompatActivity() {
         })
     }
 
-    private fun setAmenitiesWithDrawable(
-        textView: TextView, amenities: List<String>?, drawable: Drawable
-    ) {
+    private fun getAmenitiesWithDrawable(
+        amenities: List<String>?, amenityMappings: Map<String, Pair<String, Int>>
+    ): List<AmenityItem> {
+        val amenityItems = mutableListOf<AmenityItem>()
+
         if (amenities == null) {
-            binding.tvAmmenities.text = ""
-            return
+            return amenityItems
         }
 
-        val spannableStringBuilder = SpannableStringBuilder()
-
-        amenities.forEach { amenity ->
-            val spannableString = SpannableString(" $amenity\n")
-
-            // Adjust drawable size if needed
-            drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-
-            // Create an ImageSpan and set it to the SpannableString
-            val imageSpan = ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM)
-            spannableString.setSpan(imageSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-            // Append this spannableString to the builder
-            spannableStringBuilder.append(spannableString)
+        amenities.forEach { amenityId ->
+            val amenityData = amenityMappings[amenityId]
+            if (amenityData != null) {
+                val (label, drawableResId) = amenityData
+                val drawable = ContextCompat.getDrawable(this, drawableResId)
+                if (drawable != null) {
+                    amenityItems.add(AmenityItem(label, drawable))
+                }
+            }
         }
 
-        binding.tvAmmenities.text = spannableStringBuilder
+        return amenityItems
     }
 
     private fun addImageOnAutoImageSlider() {
@@ -358,6 +506,11 @@ class LibraryDetailsActivity : AppCompatActivity() {
 //        }
     }
 
+    private fun callSendEmail(emailRequestModel: EmailRequestModel) {
+        emailViewModel.postEmail(emailRequestModel)
+    }
+
+
     private fun observeProgress() {
         viewModel.showProgress.observe(this, Observer {
             if (it) {
@@ -368,10 +521,45 @@ class LibraryDetailsActivity : AppCompatActivity() {
                 binding.mainView.visibility = View.VISIBLE
             }
         })
+        emailViewModel.showProgress.observe(this, Observer {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.mainView.visibility = View.GONE
+            } else {
+                binding.progressBar.visibility = View.GONE
+                binding.mainView.visibility = View.VISIBLE
+            }
+        })
+
     }
+
+    private fun observerEmailApiResponse() {
+        emailViewModel.emailResponse.observe(this, Observer {
+            showErrorBottomDialog(
+                "We have received your email and will be in touch with you shortly."
+            )
+        })
+    }
+
+    private fun showErrorBottomDialog(message: String) {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(false)
+        bottomDialog.show()
+        dialogBinding.messageTv.text = message
+        dialogBinding.continueButton.setOnClickListener {
+            bottomDialog.dismiss()
+            finish()
+        }
+    }
+
 
     private fun observerErrorMessageApiResponse() {
         viewModel.errorMessage.observe(this, Observer {
+            ToastUtil.makeToast(this, it)
+        })
+        emailViewModel.errorMessage.observe(this, Observer {
             ToastUtil.makeToast(this, it)
         })
     }

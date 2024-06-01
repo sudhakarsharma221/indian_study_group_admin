@@ -13,14 +13,23 @@ import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.viewModel.LibraryViewModel
 import com.indiastudygroupadmin.databinding.ActivitySplashScreenBinding
 import com.indiastudygroupadmin.fillDetails.FillUserDetailsActivity
 import com.indiastudygroupadmin.registerScreen.SignInActivity
+import java.util.ArrayList
+import java.util.LinkedList
+import java.util.Queue
 
 class SplashScreenActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+
+    //    private lateinit var libraryDetailsViewModel: LibraryViewModel
+//    private var libraryList: ArrayList<LibraryResponseItem> = arrayListOf()
+//    private val libraryIdQueue: Queue<String> = LinkedList()
     private lateinit var binding: ActivitySplashScreenBinding
-    private lateinit var viewModel: UserDetailsViewModel
+    private lateinit var userDetailsViewModel: UserDetailsViewModel
     private lateinit var userData: UserDetailsResponseModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +37,10 @@ class SplashScreenActivity : AppCompatActivity() {
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
         auth = FirebaseAuth.getInstance()
+//        libraryDetailsViewModel = ViewModelProvider(this)[LibraryViewModel::class.java]
 
-        viewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
+
+        userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         Handler(Looper.getMainLooper()).postDelayed({
             if (loginCheck()) {
                 callGetUserDetailsApi(auth.currentUser!!.uid)
@@ -38,6 +49,8 @@ class SplashScreenActivity : AppCompatActivity() {
                 finish()
             }
         }, 1000)
+
+
 
         observerUserDetailsApiResponse()
         observeProgress()
@@ -49,11 +62,11 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun callGetUserDetailsApi(userId: String?) {
-        viewModel.callGetUserDetails(userId)
+        userDetailsViewModel.callGetUserDetails(userId)
     }
 
     private fun observerUserDetailsApiResponse() {
-        viewModel.userDetailsResponse.observe(this, Observer {
+        userDetailsViewModel.userDetailsResponse.observe(this, Observer {
             userData = it
             if (it.name?.trim().isNullOrEmpty() || it.address?.pincode?.trim().isNullOrEmpty()) {
                 IntentUtil.startIntent(this@SplashScreenActivity, FillUserDetailsActivity())
@@ -66,7 +79,7 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun observeProgress() {
-        viewModel.showProgress.observe(this, Observer {
+        userDetailsViewModel.showProgress.observe(this, Observer {
             if (it) {
                 binding.progressBar.visibility = View.VISIBLE
             } else {
@@ -76,8 +89,13 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun observerErrorMessageApiResponse() {
-        viewModel.errorMessage.observe(this, Observer {
+        userDetailsViewModel.errorMessage.observe(this, Observer {
             ToastUtil.makeToast(this, it)
         })
     }
+
+//               if (userData.libraries.isNotEmpty()) {
+//                userData.libraries.forEach { libraryIdQueue.add(it) }
+//                processNextLibraryId()
+//            }
 }

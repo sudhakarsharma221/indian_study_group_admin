@@ -5,6 +5,8 @@ import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPutRequestBodyMo
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserExistResponseModel
 import com.indiastudygroupadmin.app_utils.AppUrlsEndpoint
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmResponseModel
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmTokenRequestBody
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsRequestModel
 import retrofit2.Call
 import retrofit2.http.Body
@@ -41,4 +43,10 @@ interface UserDetailsService {
     fun callGetUserExist(
         @Path("contact_number") phoneNo: String?, @Query("userName") userName: String?
     ): Call<UserExistResponseModel>
+
+    @POST(AppUrlsEndpoint.ADD_FCM_TOKEN)
+    fun callAddFcmToken(
+        @Header("userid") userId: String?, @Body addFcmTokenRequestBody: AddFcmTokenRequestBody?
+    ): Call<AddFcmResponseModel>
+
 }

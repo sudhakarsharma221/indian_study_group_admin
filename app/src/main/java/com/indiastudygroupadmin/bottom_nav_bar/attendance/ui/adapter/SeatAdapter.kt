@@ -3,7 +3,6 @@ package com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.databinding.SeatsItemLayoutBinding

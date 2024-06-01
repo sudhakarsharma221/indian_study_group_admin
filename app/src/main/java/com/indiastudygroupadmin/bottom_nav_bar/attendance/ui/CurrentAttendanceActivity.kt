@@ -12,16 +12,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.SeatAdapter
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
-import com.indiastudygroupadmin.bottom_nav_bar.library.viewModel.LibraryViewModel
 import com.indiastudygroupadmin.databinding.ActivityCurrentAttendanceBinding
-import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsRequestModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import java.time.Instant
@@ -32,8 +28,6 @@ class CurrentAttendanceActivity : AppCompatActivity() {
     private var timingSize = 0
     private lateinit var libraryData: LibraryResponseItem
     private lateinit var userDetailsViewModel: UserDetailsViewModel
-    private lateinit var libraryDetailsViewModel: LibraryViewModel
-
     private lateinit var userData: UserDetailsResponseModel
     private var selectedTimingFromList = ""
     private lateinit var adapter: SeatAdapter
@@ -41,7 +35,6 @@ class CurrentAttendanceActivity : AppCompatActivity() {
     var slot1Time = ""
     var slot2Time = ""
     var slot3Time = ""
-    private lateinit var auth: FirebaseAuth
     private var selectedSeat: Int = 0
     private lateinit var binding: ActivityCurrentAttendanceBinding
 
@@ -50,8 +43,6 @@ class CurrentAttendanceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCurrentAttendanceBinding.inflate(layoutInflater)
         userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
-        libraryDetailsViewModel = ViewModelProvider(this)[LibraryViewModel::class.java]
-        auth = FirebaseAuth.getInstance()
         window.statusBarColor = Color.WHITE
         setContentView(binding.root)
         val receivedIntent = intent
@@ -181,9 +172,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
         setButtonState(textView, true)
         selectedTimingButton = textView
         val text = textView.text.toString()
+        val seatDetailsListSize = libraryData.seatDetails.size
         selectedTimingFromList = text
         when (timingSize) {
-
             3 -> {
                 when (selectedTimingFromList) {
                     slot1Time -> {
@@ -194,11 +185,12 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this, libraryData.seats!!, libraryData.vacantSeats?.get(0)!!
                         ) {
                             selectedSeat = it
-                            libraryData.seatDetails.forEach { seat ->
-                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
-                                    callUserDetailsApi(seat.bookedBy)
+                            libraryData.seatDetails.subList(0, libraryData.seats!!)
+                                .forEach { seat ->
+                                    if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                        callUserDetailsApi(seat.bookedBy)
+                                    }
                                 }
-                            }
                         }
                         binding.recyclerView.adapter = adapter
 
@@ -211,7 +203,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this, libraryData.seats!!, libraryData.vacantSeats?.get(1)!!
                         ) {
                             selectedSeat = it
-                            libraryData.seatDetails.forEach { seat ->
+                            libraryData.seatDetails.subList(
+                                libraryData.seats!!, 2 * libraryData.seats!!
+                            ).forEach { seat ->
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)
                                 }
@@ -229,7 +223,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this, libraryData.seats!!, libraryData.vacantSeats?.get(2)!!
                         ) {
                             selectedSeat = it
-                            libraryData.seatDetails.forEach { seat ->
+                            libraryData.seatDetails.subList(
+                                2 * libraryData.seats!!, seatDetailsListSize - 1
+                            ).forEach { seat ->
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)
                                 }
@@ -254,11 +250,12 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this, libraryData.seats!!, libraryData.vacantSeats?.get(0)!!
                         ) {
                             selectedSeat = it
-                            libraryData.seatDetails.forEach { seat ->
-                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
-                                    callUserDetailsApi(seat.bookedBy)
+                            libraryData.seatDetails.subList(0, libraryData.seats!!)
+                                .forEach { seat ->
+                                    if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                        callUserDetailsApi(seat.bookedBy)
+                                    }
                                 }
-                            }
                         }
                         binding.recyclerView.adapter = adapter
 
@@ -273,7 +270,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this, libraryData.seats!!, libraryData.vacantSeats?.get(1)!!
                         ) {
                             selectedSeat = it
-                            libraryData.seatDetails.forEach { seat ->
+                            libraryData.seatDetails.subList(
+                                libraryData.seats!!, seatDetailsListSize - 1
+                            ).forEach { seat ->
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)
                                 }
@@ -354,6 +353,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
             Glide.with(this).load(userData.photo).placeholder(R.drawable.profile)
                 .error(R.drawable.profile).into(binding.ivProfile)
             binding.studentName.text = userData.name
+            binding.studentName.textSize = 14f
+            binding.ivProfile.visibility = View.VISIBLE
+            binding.studentName.setTextColor(Color.parseColor("#120D26"))
+
         })
     }
 
@@ -373,7 +376,11 @@ class CurrentAttendanceActivity : AppCompatActivity() {
 
     private fun observerErrorMessageApiResponse() {
         userDetailsViewModel.errorMessage.observe(this, Observer {
-            ToastUtil.makeToast(this, it)
+            binding.studentName.text =
+                "Error!!\nEither student do not exist anymore or there is some server error"
+            binding.ivProfile.visibility = View.GONE
+            binding.studentName.textSize = 12f
+            binding.studentName.setTextColor(Color.parseColor("#FB5C5C"))
         })
     }
 }

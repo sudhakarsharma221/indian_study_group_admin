@@ -37,6 +37,8 @@ data class LibraryResponseItem(
     @SerializedName("ownerName") var ownerName: String? = null,
     @SerializedName("ownerPhoto") var ownerPhoto: String? = null,
     @SerializedName("contact") var contact: String? = null,
+    @SerializedName("rating") var rating: Rating? = null,
+    @SerializedName("reviews") var reviews: ArrayList<Reviews>? = arrayListOf(),
     @SerializedName("history") var history: ArrayList<History>? = arrayListOf(),
     @SerializedName("photo") var photo: ArrayList<String>? = arrayListOf(),
     @SerializedName("seats") var seats: Int? = null,
@@ -61,6 +63,10 @@ data class LibraryResponseItem(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readParcelable(Rating::class.java.classLoader),
+        arrayListOf<Reviews>().apply {
+            parcel.readList(this, Reviews::class.java.classLoader)
+        },
         arrayListOf<History>().apply {
             parcel.readList(this, History::class.java.classLoader)
         },
@@ -100,6 +106,8 @@ data class LibraryResponseItem(
         parcel.writeString(ownerName)
         parcel.writeString(ownerPhoto)
         parcel.writeString(contact)
+        parcel.writeParcelable(rating, flags)
+        parcel.writeList(reviews)
         parcel.writeList(history)
         parcel.writeList(photo)
         parcel.writeValue(seats)
@@ -128,6 +136,77 @@ data class LibraryResponseItem(
         }
 
         override fun newArray(size: Int): Array<LibraryResponseItem?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+data class Reviews(
+    @SerializedName("date") var date: String? = null,
+    @SerializedName("userName") var userName: String? = null,
+    @SerializedName("userPhoto") var photo: String? = null,
+    @SerializedName("message") var message: String? = null,
+    @SerializedName("_id") var id: String? = null,
+
+    ) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(date)
+        parcel.writeString(userName)
+        parcel.writeString(photo)
+        parcel.writeString(message)
+        parcel.writeString(id)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Reviews> {
+        override fun createFromParcel(parcel: Parcel): Reviews {
+            return Reviews(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Reviews?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+data class Rating(
+    @SerializedName("totalRatings") var totalRatings: Int? = null,
+    @SerializedName("count") var count: Int? = null,
+
+    ) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readValue(Int::class.java.classLoader) as? Int
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(totalRatings)
+        parcel.writeValue(count)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Rating> {
+        override fun createFromParcel(parcel: Parcel): Rating {
+            return Rating(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Rating?> {
             return arrayOfNulls(size)
         }
     }

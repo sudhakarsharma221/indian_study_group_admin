@@ -1,19 +1,24 @@
 package com.indiastudygroupadmin.bottom_nav_bar.attendance.ui
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.History
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
 import com.indiastudygroupadmin.databinding.ActivityAttendanceHistoryBinding
+import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneOffset
@@ -24,6 +29,7 @@ class AttendanceHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAttendanceHistoryBinding
     private lateinit var libraryData: LibraryResponseItem
     private var selectedTimeFromList = ""
+    private var slot = 0
     private lateinit var selectedTimeButton: TextView
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -116,14 +122,17 @@ class AttendanceHistoryActivity : AppCompatActivity() {
         setButtonState(binding.buttonSlot3, false)
 
         binding.buttonSlot1.setOnClickListener {
+            slot = 0
             binding.requireTime.visibility = View.GONE
             toggleButtonState(binding.buttonSlot1)
         }
         binding.buttonSlot2.setOnClickListener {
+            slot = 2
             binding.requireTime.visibility = View.GONE
             toggleButtonState(binding.buttonSlot2)
         }
         binding.buttonSlot3.setOnClickListener {
+            slot = 3
             binding.requireTime.visibility = View.GONE
             toggleButtonState(binding.buttonSlot3)
         }
@@ -142,13 +151,48 @@ class AttendanceHistoryActivity : AppCompatActivity() {
         }
         binding.addStudentButton.setOnClickListener {
             val date = binding.chooseDate.text.toString()
+            val historyList = ArrayList<History>()
             if (date == "Choose Date") {
                 binding.requireDate.visibility = View.VISIBLE
             } else if (selectedTimeFromList.isEmpty()) {
                 binding.requireTime.visibility = View.VISIBLE
             } else {
+                libraryData.history!!.forEach { history ->
+                    if (history.date?.substring(0, 10) == date && slot == history.slot) {
+                        Log.d("CHOOSEDATETAG", historyList.toString())
+                        historyList.add(history)
+                    }
+                }
+                Log.d("CHOOSEDATETAG", historyList.toString())
+                if (historyList.isNotEmpty()) {
+                    val intent = Intent(this, AttendanceHistoryShowActivity::class.java)
 
+                    intent.putExtra("historyList", historyList)
+                    intent.putExtra("date", date)
+                    intent.putExtra("slot", selectedTimeFromList)
+                    intent.putExtra("totalSeats", libraryData.seats)
+                    intent.putExtra(
+                        "vacantSeats", (libraryData.seats?.minus(
+                            historyList.size
+                        ))
+                    )
+                    startActivity(intent)
+                } else {
+                    showErrorBottomDialog("You do not have any booking for this date")
+                }
             }
+        }
+    }
+
+    private fun showErrorBottomDialog(message: String) {
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+        val dialogBinding = ErrorBottomDialogLayoutBinding.inflate(layoutInflater)
+        bottomDialog.setContentView(dialogBinding.root)
+        bottomDialog.setCancelable(true)
+        bottomDialog.show()
+        dialogBinding.messageTv.text = message
+        dialogBinding.continueButton.setOnClickListener {
+            bottomDialog.dismiss()
         }
     }
 

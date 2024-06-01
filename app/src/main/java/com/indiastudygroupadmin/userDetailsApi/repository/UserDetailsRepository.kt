@@ -9,6 +9,8 @@ import com.indiastudygroupadmin.userDetailsApi.model.UserExistResponseModel
 import com.indiastudygroupadmin.userDetailsApi.network.UserDetailsService
 import com.indiastudygroupadmin.app_utils.AppConstant
 import com.indiastudygroupadmin.retrofitUtils.RetrofitUtilClass
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmResponseModel
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmTokenRequestBody
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsRequestModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -17,6 +19,7 @@ import retrofit2.Response
 class UserDetailsRepository {
     val showProgress = MutableLiveData<Boolean>()
     val errorMessage = MutableLiveData<String>()
+    val addFcmTokenResponse = MutableLiveData<AddFcmResponseModel>()
     val userDetailsResponse = MutableLiveData<UserDetailsResponseModel>()
     val userDetailsIdResponse = MutableLiveData<UserDetailsResponseModel>()
     val userExistResponse = MutableLiveData<UserExistResponseModel>()
@@ -214,4 +217,37 @@ class UserDetailsRepository {
         })
     }
 
+    fun postFcmToken(
+        userId: String?, addFcmTokenRequestBody: AddFcmTokenRequestBody
+    ) {
+        showProgress.value = true
+        val client = RetrofitUtilClass.getRetrofit().create(UserDetailsService::class.java)
+        val call = client.callAddFcmToken(userId, addFcmTokenRequestBody)
+        call.enqueue(object : Callback<AddFcmResponseModel?> {
+            override fun onResponse(
+                call: Call<AddFcmResponseModel?>, response: Response<AddFcmResponseModel?>
+            ) {
+                showProgress.postValue(false)
+                val body = response.body()
+                Log.d("addFcmTokenResponse", "body : ${body.toString()}")
+                if (response.isSuccessful) {
+                    addFcmTokenResponse.postValue(body!!)
+                } else {
+                    val errorBody = response.errorBody()?.string() // Extract error body as string
+                    Log.d("addFcmTokenResponse", "response fail : $errorBody")
+                    if (response.code() == AppConstant.USER_NOT_FOUND) {
+                        errorMessage.postValue("User not exist please sign up")
+                    } else {
+                        errorMessage.postValue(errorBody!!)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<AddFcmResponseModel?>, t: Throwable) {
+                Log.d("addFcmTokenResponse", "failed local: ${t.localizedMessage}")
+                showProgress.postValue(false)
+                errorMessage.postValue("Server error please try after sometime")
+            }
+        })
+    }
 }

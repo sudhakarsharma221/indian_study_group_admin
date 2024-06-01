@@ -6,6 +6,8 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -24,6 +26,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IndianStudyGroupAdmin"
         tools:targetApi="31">
+        <activity
+            android:name=".rating.ui.ReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.attendance.ui.AttendanceHistoryShowActivity"
+            android:exported="false" />
         <activity
             android:name=".bottom_nav_bar.attendance.ui.AttendanceHistoryActivity"
             android:exported="false" />
@@ -80,7 +88,7 @@
             android:name=".editProfile.EditProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".addLibrary.ui.AddLibraryActivity"
+            android:name=".addLibrary.AddLibraryActivity"
             android:exported="false" />
         <activity
             android:name=".registerScreen.OtpActivity"
@@ -125,6 +133,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/library_file_paths" />
         </provider>
+
+        <service
+            android:name=".notification.firebase.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <meta-data
             android:name="preloaded_fonts"

@@ -67,7 +67,9 @@ class MoreFragment : Fragment() {
 
     private fun initListener() {
 
-
+        binding.studentData.setOnClickListener {
+            IntentUtil.startIntent(requireContext(), StudentDataActivity())
+        }
         binding.tvWallet.setOnClickListener {
             IntentUtil.startIntent(requireContext(), WalletActivity())
         }

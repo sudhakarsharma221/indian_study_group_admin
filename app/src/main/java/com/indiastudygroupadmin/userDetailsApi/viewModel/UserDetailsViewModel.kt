@@ -2,6 +2,8 @@ package com.indiastudygroupadmin.userDetailsApi.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmResponseModel
+import com.indiastudygroupadmin.userDetailsApi.model.AddFcmTokenRequestBody
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPostRequestBodyModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsPutRequestBodyModel
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsRequestModel
@@ -16,6 +18,7 @@ object UserDetailData {
 class UserDetailsViewModel : ViewModel() {
     var showProgress = MutableLiveData<Boolean>()
     var errorMessage = MutableLiveData<String>()
+    var addFcmTokenResponse = MutableLiveData<AddFcmResponseModel>()
     var userDetailsResponse = MutableLiveData<UserDetailsResponseModel>()
     var userDetailsIdResponse = MutableLiveData<UserDetailsResponseModel>()
     var userExistResponse = MutableLiveData<UserExistResponseModel>()
@@ -24,9 +27,14 @@ class UserDetailsViewModel : ViewModel() {
     init {
         this.userDetailsResponse = repository.userDetailsResponse
         this.userExistResponse = repository.userExistResponse
+        this.addFcmTokenResponse = repository.addFcmTokenResponse
         this.userDetailsIdResponse = repository.userDetailsIdResponse
         this.showProgress = repository.showProgress
         this.errorMessage = repository.errorMessage
+    }
+
+    fun callPostFcmToken(userId: String?, addFcmTokenRequestBody: AddFcmTokenRequestBody) {
+        repository.postFcmToken(userId, addFcmTokenRequestBody)
     }
 
     fun callGetUserDetails(userId: String?) {
