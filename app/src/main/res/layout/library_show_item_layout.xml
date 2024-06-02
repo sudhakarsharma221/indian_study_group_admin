@@ -57,7 +57,7 @@
                     android:layout_height="180dp"
                     android:background="@color/white"
                     android:scaleType="fitXY"
-                    android:src="@drawable/lib"
+                    android:src="@drawable/noimage"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

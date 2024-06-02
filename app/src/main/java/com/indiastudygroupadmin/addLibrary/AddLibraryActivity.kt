@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,8 @@ import com.indiastudygroupadmin.addLibrary.adapter.ImageAdapter
 import com.indiastudygroupadmin.app_utils.HideKeyboard
 import com.indiastudygroupadmin.app_utils.TimePickerCustomDialog
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.AmenityItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter.AmenitiesAdapter
 import com.indiastudygroupadmin.databinding.ActivityAddLibraryBinding
 import com.indiastudygroupadmin.databinding.AddTimingBottomDialogBinding
 import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
@@ -54,21 +57,32 @@ class AddLibraryActivity : AppCompatActivity() {
     private lateinit var pinCodeViewModel: PinCodeViewModel
     private var selectedFacilities: ArrayList<String>? = arrayListOf()
 
+    private val amenityMappings = mapOf(
+        "AC" to Pair("Air Conditioning", R.drawable.ac),
+        "Studyspace" to Pair("Study Space", R.drawable.study),
+        "Wifi" to Pair("Wi-Fi", R.drawable.wifi),
+        "Printing" to Pair("Printing", R.drawable.printing),
+        "Charging" to Pair("Charging Station", R.drawable.charging),
+        "Groupstudyroom" to Pair("Group Study Room", R.drawable.groupstudy),
+        "Refreshment" to Pair("Refreshment Area", R.drawable.refreshment),
+        "Studyarea" to Pair("Study Area", R.drawable.study),
+        "Books" to Pair("Books and Magazines", R.drawable.books),
+        "Computer" to Pair("Computer", R.drawable.computer)
+    )
+
+
     private val facilitiesList = arrayOf(
         "AC",
-        "Study Spaces",
-        "Wi-Fi",
-        "Printing Services",
-        "Charging Stations",
-        "Group Study Rooms",
+        "Studyspace",
+        "Wifi",
+        "Printing",
+        "Charging",
+        "Groupstudyroom",
         "Refreshment",
         "Books",
-//        "Water",
-        "Computers",
-
-//        "Reference Materials",
-
+        "Computer",
     )
+
     private val checkedFacilities =
         BooleanArray(facilitiesList.size) // Initialize with the same length as topicsList
 
@@ -88,7 +102,7 @@ class AddLibraryActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         adapter = ImageAdapter(this, imagesUriList)
         pickMedia =
-            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(3)) { uri ->
+            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uri ->
                 if (uri != null) {
                     this.imagesUriList.addAll(uri)
                     adapter = ImageAdapter(this@AddLibraryActivity, imagesUriList)
@@ -116,6 +130,7 @@ class AddLibraryActivity : AppCompatActivity() {
             finish()
         }
 
+        binding.amenitiesRecyclerView.layoutManager = LinearLayoutManager(this)
 
 
         binding.buttonSlot1.setOnClickListener {
@@ -204,8 +219,8 @@ class AddLibraryActivity : AppCompatActivity() {
                 binding.ownerEt.error = "Enter less than 30 characters"
             } else if (buttonSlot1 == "Set Slot 1 Time" && buttonSlot2 == "Set Slot 2 Time" && buttonSlot3 == "Set Slot 3 Time") {
                 binding.requireTime.visibility = View.VISIBLE
-            } else if (imagesUriList.size > 3) {
-                ToastUtil.makeToast(this, "Select Maximum Of 3 Images")
+            } else if (imagesUriList.size > 5) {
+                ToastUtil.makeToast(this, "Select Maximum Of 5 Images")
             } else {
                 if (imagesUriList.isNotEmpty()) {
                     uploadImage(
@@ -424,14 +439,18 @@ class AddLibraryActivity : AppCompatActivity() {
                 ).show()
             } else {
                 // User clicked OK and at least one item is selected
+                selectedFacilities?.clear()
                 for (i in checkedFacilities.indices) {
                     if (checkedFacilities[i]) {
                         selectedFacilities?.add(facilitiesList[i])
                     }
                 }
                 if (selectedFacilities?.isNotEmpty() == true) {
-                    binding.selectedAmenities.visibility = View.VISIBLE
-                    binding.selectedAmenities.text = selectedFacilities.toString()
+                    val allAmenities =
+                        getAmenitiesWithDrawable(selectedFacilities!!.distinct(), amenityMappings)
+                    val adapter = AmenitiesAdapter(this, allAmenities)
+                    binding.amenitiesRecyclerView.adapter = adapter
+                    adapter.notifyDataSetChanged()
                 }
             }
         }.setNegativeButton("Cancel") { dialog, which ->
@@ -444,6 +463,28 @@ class AddLibraryActivity : AppCompatActivity() {
         // Create and show the AlertDialog
         val dialog = builder.create()
         dialog.show()
+    }
+    private fun getAmenitiesWithDrawable(
+        amenities: List<String>?, amenityMappings: Map<String, Pair<String, Int>>
+    ): List<AmenityItem> {
+        val amenityItems = mutableListOf<AmenityItem>()
+
+        if (amenities == null) {
+            return amenityItems
+        }
+
+        amenities.forEach { amenityId ->
+            val amenityData = amenityMappings[amenityId]
+            if (amenityData != null) {
+                val (label, drawableResId) = amenityData
+                val drawable = ContextCompat.getDrawable(this, drawableResId)
+                if (drawable != null) {
+                    amenityItems.add(AmenityItem(label, drawable))
+                }
+            }
+        }
+
+        return amenityItems
     }
 
     private fun focusChangeListeners() {

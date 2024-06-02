@@ -60,7 +60,7 @@
             android:name=".qr.QrCodeShowActivity"
             android:exported="false" />
         <activity
-            android:name=".add_regular_student.AddRegularStudentActivity"
+            android:name=".add_regular_student.ui.AddRegularStudentActivity"
             android:exported="false" />
         <activity
             android:name=".message.ui.MessageActivity"

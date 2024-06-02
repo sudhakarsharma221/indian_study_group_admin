@@ -1,4 +1,4 @@
-package com.indiastudygroupadmin.add_regular_student
+package com.indiastudygroupadmin.add_regular_student.ui
 
 import android.app.DatePickerDialog
 import android.graphics.Color
@@ -238,7 +238,6 @@ class AddRegularStudentActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun formatTime(hours: Int?, minutes: Int?): String {

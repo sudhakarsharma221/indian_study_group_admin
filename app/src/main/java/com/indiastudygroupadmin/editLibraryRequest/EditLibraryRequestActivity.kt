@@ -59,7 +59,7 @@ class EditLibraryRequestActivity : AppCompatActivity() {
     private lateinit var emailViewModel: EmailViewModel
     private var imagesUriList = ArrayList<Uri>()
     private lateinit var adapter: ImageAdapter
-    private var itemsCount = 3
+    private var itemsCount = 5
     private var selectedFacilities: ArrayList<String>? = arrayListOf()
 
     private val amenityMappings = mapOf(
@@ -144,9 +144,11 @@ class EditLibraryRequestActivity : AppCompatActivity() {
         adapter = ImageAdapter(this, imagesUriList)
 
         when (libraryData.photo?.size) {
-            0 -> itemsCount = 3
-            1 -> itemsCount = 2
-            2 -> itemsCount = 1
+            0 -> itemsCount = 5
+            1 -> itemsCount = 4
+            2 -> itemsCount = 3
+            3 -> itemsCount = 2
+            4 -> itemsCount = 1
             else -> binding.addImage.visibility = View.GONE
         }
 
@@ -279,8 +281,8 @@ class EditLibraryRequestActivity : AppCompatActivity() {
                 binding.requireTime.visibility = View.VISIBLE
             } else if (changes.trim().isEmpty()) {
                 binding.changeEt.error = "Empty Field"
-            } else if (imagesUriList.size > 3) {
-                ToastUtil.makeToast(this, "Select Maximum Of 3 Images")
+            } else if (imagesUriList.size > itemsCount) {
+                ToastUtil.makeToast(this, "Select Maximum Of $itemsCount Images. You already have ${3- itemsCount} uploaded")
             } else {
                 if (imagesUriList.isNotEmpty()) {
                     uploadImage(

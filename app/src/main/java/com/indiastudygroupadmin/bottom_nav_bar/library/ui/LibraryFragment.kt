@@ -2,6 +2,7 @@ package com.indiastudygroupadmin.bottom_nav_bar.library.ui
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -95,7 +97,10 @@ class LibraryFragment : Fragment() {
             IntentUtil.startIntent(requireContext(), MessageActivity())
         }
         binding.notification.setOnClickListener {
-            IntentUtil.startIntent(requireContext(), NotificationActivity())
+            val intent = Intent(requireContext(), NotificationActivity::class.java)
+            startActivityForResult(
+                intent, 2
+            )
         }
 
         if (!ApiCallsConstant.apiCallsOnceLibrary) {
@@ -145,6 +150,13 @@ class LibraryFragment : Fragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 2 && resultCode == AppCompatActivity.RESULT_OK) {
+            binding.newNotification.visibility = View.GONE
+        }
+    }
+
     private fun callIdLibraryDetailsApi(id: String?) {
         libraryDetailsViewModel.callIdLibrary(id)
     }
@@ -152,6 +164,13 @@ class LibraryFragment : Fragment() {
     private fun observerUserDetailsApiResponse() {
         userDetailsViewModel.userDetailsResponse.observe(viewLifecycleOwner, Observer {
             userData = it
+
+            userData.notifications.forEach { noti ->
+                if (noti.status == "unread") {
+                    binding.newNotification.visibility = View.VISIBLE
+                }
+            }
+
             if (userData.libraries.isEmpty()) {
                 binding.noLibAvailable.visibility = View.VISIBLE
                 binding.recyclerView.visibility = View.GONE

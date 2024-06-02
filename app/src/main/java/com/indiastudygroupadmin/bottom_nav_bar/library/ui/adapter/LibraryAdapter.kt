@@ -3,7 +3,6 @@ package com.indiastudygroupadmin.bottom_nav_bar.library.ui.adapter
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
 import com.indiastudygroupadmin.R
-import com.indiastudygroupadmin.add_regular_student.AddRegularStudentActivity
-import com.indiastudygroupadmin.app_utils.IntentUtil
+import com.indiastudygroupadmin.add_regular_student.ui.AddRegularStudentActivity
 import com.indiastudygroupadmin.bottom_nav_bar.library.ui.LibraryDetailsActivity
 import com.indiastudygroupadmin.databinding.LibraryShowItemLayoutBinding
 import com.indiastudygroupadmin.qr.QrCodeShowActivity

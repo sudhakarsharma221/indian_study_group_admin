@@ -127,12 +127,12 @@ class AttendanceHistoryActivity : AppCompatActivity() {
             toggleButtonState(binding.buttonSlot1)
         }
         binding.buttonSlot2.setOnClickListener {
-            slot = 2
+            slot = 1
             binding.requireTime.visibility = View.GONE
             toggleButtonState(binding.buttonSlot2)
         }
         binding.buttonSlot3.setOnClickListener {
-            slot = 3
+            slot = 2
             binding.requireTime.visibility = View.GONE
             toggleButtonState(binding.buttonSlot3)
         }
@@ -149,7 +149,7 @@ class AttendanceHistoryActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener {
             finish()
         }
-        binding.addStudentButton.setOnClickListener {
+        binding.proceedButton.setOnClickListener {
             val date = binding.chooseDate.text.toString()
             val historyList = ArrayList<History>()
             if (date == "Choose Date") {
@@ -159,11 +159,9 @@ class AttendanceHistoryActivity : AppCompatActivity() {
             } else {
                 libraryData.history!!.forEach { history ->
                     if (history.date?.substring(0, 10) == date && slot == history.slot) {
-                        Log.d("CHOOSEDATETAG", historyList.toString())
                         historyList.add(history)
                     }
                 }
-                Log.d("CHOOSEDATETAG", historyList.toString())
                 if (historyList.isNotEmpty()) {
                     val intent = Intent(this, AttendanceHistoryShowActivity::class.java)
 

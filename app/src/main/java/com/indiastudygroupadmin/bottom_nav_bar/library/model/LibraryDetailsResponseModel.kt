@@ -50,7 +50,7 @@ data class LibraryResponseItem(
     @SerializedName("address") var address: Address? = Address(),
     @SerializedName("createdByAgent") var createdByAgent: String? = null,
     @SerializedName("timing") var timing: ArrayList<Timing> = arrayListOf(),
-    @SerializedName("upcomingBooking") var upcomingBooking: ArrayList<String> = arrayListOf(),
+    //@SerializedName("upcomingBooking") var upcomingBooking: ArrayList<String> = arrayListOf(),
     @SerializedName("createdAt") var createdAt: String? = null,
     @SerializedName("updatedAt") var updatedAt: String? = null,
     @SerializedName("__v") var v: Int? = null,
@@ -90,9 +90,9 @@ data class LibraryResponseItem(
         arrayListOf<Timing>().apply {
             parcel.readList(this, Timing::class.java.classLoader)
         },
-        arrayListOf<String>().apply {
-            parcel.readList(this, String::class.java.classLoader)
-        },
+//        arrayListOf<String>().apply {
+//            parcel.readList(this, String::class.java.classLoader)
+//        },
         parcel.readString(),
         parcel.readString(),
         parcel.readValue(Int::class.java.classLoader) as? Int,
@@ -119,7 +119,7 @@ data class LibraryResponseItem(
         parcel.writeParcelable(address, flags)
         parcel.writeString(createdByAgent)
         parcel.writeList(timing)
-        parcel.writeList(upcomingBooking)
+//        parcel.writeList(upcomingBooking)
         parcel.writeString(createdAt)
         parcel.writeString(updatedAt)
         parcel.writeValue(v)

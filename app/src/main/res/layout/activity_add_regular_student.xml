@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".add_regular_student.AddRegularStudentActivity">
+    tools:context=".add_regular_student.ui.AddRegularStudentActivity">
 
     <ImageView
         android:id="@+id/backButton"

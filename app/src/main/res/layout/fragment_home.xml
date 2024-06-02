@@ -96,10 +96,21 @@
 
                 <ImageView
                     android:layout_width="20dp"
+                    android:padding="1.5dp"
                     android:layout_height="20dp"
-                    android:layout_margin="7dp"
+                    android:layout_margin="5dp"
                     android:src="@drawable/baseline_chat_bubble_outline_24" />
             </com.google.android.material.card.MaterialCardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/newNotification"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                app:cardBackgroundColor="@color/blue1"
+                android:visibility="gone"
+                app:cardCornerRadius="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
 
             <com.google.android.material.card.MaterialCardView
@@ -114,8 +125,8 @@
                 app:strokeWidth="0.5dp">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_margin="5dp"
                     android:src="@drawable/baseline_notifications_none_24" />
             </com.google.android.material.card.MaterialCardView>
