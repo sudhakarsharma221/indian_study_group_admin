@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -182,7 +183,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             "${libraryData.vacantSeats?.get(0)}/${libraryData.seats} seats vacant"
 
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(0)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(0)!!,
+                            libraryData.seatDetails
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(0, libraryData.seats!!)
@@ -200,7 +204,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                         binding.tvSeats.text =
                             "${libraryData.vacantSeats?.get(1)}/${libraryData.seats} seats vacant"
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(1)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(1)!!,
+                            libraryData.seatDetails
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
@@ -220,7 +227,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                         binding.tvSeats.text =
                             "${libraryData.vacantSeats?.get(2)}/${libraryData.seats} seats vacant"
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(2)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(2)!!,
+                            libraryData.seatDetails
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
@@ -247,7 +257,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             "${libraryData.vacantSeats?.get(0)}/${libraryData.seats} seats vacant"
 
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(0)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(0)!!,
+                            libraryData.seatDetails
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(0, libraryData.seats!!)
@@ -267,7 +280,10 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             "${libraryData.vacantSeats?.get(1)}/${libraryData.seats} seats vacant"
 
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(1)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(1)!!,
+                            libraryData.seatDetails
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
@@ -295,10 +311,15 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             "${libraryData.vacantSeats?.get(0)}/${libraryData.seats} seats vacant"
 
                         adapter = SeatAdapter(
-                            this, libraryData.seats!!, libraryData.vacantSeats?.get(0)!!
+                            this,
+                            libraryData.seats!!,
+                            libraryData.vacantSeats?.get(0)!!,
+                            libraryData.seatDetails
                         ) {
+                            Log.d("SEATNUMBER", it.toString())
                             selectedSeat = it
                             libraryData.seatDetails.forEach { seat ->
+                                Log.d("SEATNUMBERRR", seat.seatNumber.toString())
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)
                                 }
@@ -341,9 +362,21 @@ class CurrentAttendanceActivity : AppCompatActivity() {
     }
 
     private fun formatTime(hours: Int?, minutes: Int?): String {
-        val hourFormatted = if (hours == 0 || hours == 21) 12 else hours?.rem(12)
-        val amPm = if (hours!! < 12) "am" else "pm"
-        return String.format("%02d:%02d %s", hourFormatted, minutes, amPm)
+        if (hours == null || minutes == null) {
+            throw IllegalArgumentException("Hours and minutes cannot be null")
+        }
+
+        val adjustedHours = when {
+            hours == 24 -> 0
+            hours == 0 -> 12
+            hours > 12 -> hours - 12
+            hours == 12 -> 12
+            else -> hours
+        }
+
+        val amPm = if (hours < 12 || hours == 24) "AM" else "PM"
+
+        return String.format("%02d:%02d %s", adjustedHours, minutes, amPm)
     }
 
 

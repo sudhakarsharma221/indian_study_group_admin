@@ -12,7 +12,9 @@ import com.bumptech.glide.Glide
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.SeatAdapter
+import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.SeatAdapterHistory
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.History
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.SeatDetails
 import com.indiastudygroupadmin.databinding.ActivityAttendanceHistoryShowBinding
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
@@ -21,7 +23,7 @@ class AttendanceHistoryShowActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAttendanceHistoryShowBinding
     private lateinit var userDetailsViewModel: UserDetailsViewModel
     private lateinit var userData: UserDetailsResponseModel
-    private lateinit var adapter: SeatAdapter
+    private lateinit var adapter: SeatAdapterHistory
     private var selectedSeat: Int = 0
 
 
@@ -52,7 +54,7 @@ class AttendanceHistoryShowActivity : AppCompatActivity() {
         binding.textView.text = "Attendance\n$date\n$slot"
 
         binding.tvSeats.text = "$vacantSeats/$totalSeats seats vacant"
-        adapter = SeatAdapter(
+        adapter = SeatAdapterHistory(
             this, totalSeats, vacantSeats
         ) {
             selectedSeat = it

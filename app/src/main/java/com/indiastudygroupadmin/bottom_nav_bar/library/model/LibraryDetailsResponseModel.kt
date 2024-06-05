@@ -216,11 +216,13 @@ data class SeatDetails(
     @SerializedName("seatNumber") var seatNumber: Int? = null,
     @SerializedName("isBooked") var isBooked: Boolean? = null,
     @SerializedName("bookedBy") var bookedBy: String? = null,
+    @SerializedName("status") var status: String? = null,
     @SerializedName("_id") var id: String? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readString(),
         parcel.readString(),
         parcel.readString()
     )
@@ -229,6 +231,7 @@ data class SeatDetails(
         parcel.writeValue(seatNumber)
         parcel.writeValue(isBooked)
         parcel.writeString(bookedBy)
+        parcel.writeString(status)
         parcel.writeString(id)
     }
 

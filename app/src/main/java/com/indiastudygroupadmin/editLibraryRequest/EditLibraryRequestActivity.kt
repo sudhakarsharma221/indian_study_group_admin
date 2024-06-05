@@ -282,7 +282,10 @@ class EditLibraryRequestActivity : AppCompatActivity() {
             } else if (changes.trim().isEmpty()) {
                 binding.changeEt.error = "Empty Field"
             } else if (imagesUriList.size > itemsCount) {
-                ToastUtil.makeToast(this, "Select Maximum Of $itemsCount Images. You already have ${3- itemsCount} uploaded")
+                ToastUtil.makeToast(
+                    this,
+                    "Select Maximum Of $itemsCount Images. You already have ${3 - itemsCount} uploaded"
+                )
             } else {
                 if (imagesUriList.isNotEmpty()) {
                     uploadImage(
@@ -517,9 +520,21 @@ class EditLibraryRequestActivity : AppCompatActivity() {
     }
 
     private fun formatTime(hours: Int?, minutes: Int?): String {
-        val hourFormatted = if (hours == 0 || hours == 21) 12 else hours?.rem(12)
-        val amPm = if (hours!! < 12) "am" else "pm"
-        return String.format("%02d:%02d %s", hourFormatted, minutes, amPm)
+        if (hours == null || minutes == null) {
+            throw IllegalArgumentException("Hours and minutes cannot be null")
+        }
+
+        val adjustedHours = when {
+            hours == 24 -> 0
+            hours == 0 -> 12
+            hours > 12 -> hours - 12
+            hours == 12 -> 12
+            else -> hours
+        }
+
+        val amPm = if (hours < 12 || hours == 24) "AM" else "PM"
+
+        return String.format("%02d:%02d %s", adjustedHours, minutes, amPm)
     }
 
     private fun callSendEmail(emailRequestModel: EmailRequestModel) {
