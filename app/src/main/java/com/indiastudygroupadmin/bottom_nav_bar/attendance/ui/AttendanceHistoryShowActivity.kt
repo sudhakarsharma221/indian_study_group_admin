@@ -47,6 +47,7 @@ class AttendanceHistoryShowActivity : AppCompatActivity() {
 
         val date = intent.getStringExtra("date")
         val slot = intent.getStringExtra("slot")
+        val slotNumber = intent.getIntExtra("slotNumber", 0)
         val vacantSeats = intent.getIntExtra("vacantSeats", 0)
         val totalSeats = intent.getIntExtra("totalSeats", 0)
         val historyList: ArrayList<History>? = intent.getParcelableArrayListExtra("historyList")
@@ -54,17 +55,44 @@ class AttendanceHistoryShowActivity : AppCompatActivity() {
         binding.textView.text = "Attendance\n$date\n$slot"
 
         binding.tvSeats.text = "$vacantSeats/$totalSeats seats vacant"
-        adapter = SeatAdapterHistory(
-            this, totalSeats, vacantSeats
-        ) {
-            selectedSeat = it
-            historyList?.forEach { seat ->
-                if (seat.seatNo == selectedSeat - 1 && !seat.studentId.isNullOrEmpty()) {
-                    callUserDetailsApi(seat.studentId)
+        if (slotNumber == 0) {
+            adapter = SeatAdapterHistory(
+                this, totalSeats, vacantSeats
+            ) {
+                selectedSeat = it
+                historyList?.forEach { seat ->
+                    if (seat.seatNo == selectedSeat - 1 && !seat.studentId.isNullOrEmpty()) {
+                        callUserDetailsApi(seat.studentId)
+                    }
                 }
             }
+            binding.recyclerView.adapter = adapter
+        } else if (slotNumber == 1) {
+            adapter = SeatAdapterHistory(
+                this, totalSeats, vacantSeats
+            ) {
+                selectedSeat = it
+                historyList?.forEach { seat ->
+                    if (seat.seatNo!! - totalSeats == selectedSeat - 1 && !seat.studentId.isNullOrEmpty()) {
+                        callUserDetailsApi(seat.studentId)
+                    }
+                }
+            }
+            binding.recyclerView.adapter = adapter
+        } else if (slotNumber == 2) {
+            adapter = SeatAdapterHistory(
+                this, totalSeats, vacantSeats
+            ) {
+                selectedSeat = it
+                historyList?.forEach { seat ->
+                    if ((2 * seat.seatNo!!) - totalSeats == selectedSeat - 1 && !seat.studentId.isNullOrEmpty()) {
+                        callUserDetailsApi(seat.studentId)
+                    }
+                }
+            }
+            binding.recyclerView.adapter = adapter
         }
-        binding.recyclerView.adapter = adapter
+
 
     }
 

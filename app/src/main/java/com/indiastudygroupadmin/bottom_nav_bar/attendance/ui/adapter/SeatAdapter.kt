@@ -12,7 +12,7 @@ class SeatAdapter(
     val context: Context,
     private val totalSeats: Int,
     private val vacantSeats: Int,
-    private val list: ArrayList<SeatDetails>,
+    private val list: List<SeatDetails>,
     private val onSeatSelected: (Int) -> Unit
 ) : RecyclerView.Adapter<SeatAdapter.MyViewHolder>() {
 

@@ -33,9 +33,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
     private var selectedTimingFromList = ""
     private lateinit var adapter: SeatAdapter
     private lateinit var selectedTimingButton: TextView
-    var slot1Time = ""
-    var slot2Time = ""
-    var slot3Time = ""
+    private var slot1Time = ""
+    private var slot2Time = ""
+    private var slot3Time = ""
     private var selectedSeat: Int = 0
     private lateinit var binding: ActivityCurrentAttendanceBinding
 
@@ -142,15 +142,6 @@ class CurrentAttendanceActivity : AppCompatActivity() {
             }
         }
 
-
-        val currentInstant = Instant.now()
-        val formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC)
-        val formattedDate = formatter.format(currentInstant)
-
-
-
-
         binding.backButton.setOnClickListener {
             finish()
         }
@@ -186,7 +177,7 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this,
                             libraryData.seats!!,
                             libraryData.vacantSeats?.get(0)!!,
-                            libraryData.seatDetails
+                            libraryData.seatDetails.subList(0, libraryData.seats!!)
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(0, libraryData.seats!!)
@@ -207,7 +198,9 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this,
                             libraryData.seats!!,
                             libraryData.vacantSeats?.get(1)!!,
-                            libraryData.seatDetails
+                            libraryData.seatDetails.subList(
+                                libraryData.seats!!, 2 * libraryData.seats!!
+                            )
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
@@ -230,11 +223,13 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this,
                             libraryData.seats!!,
                             libraryData.vacantSeats?.get(2)!!,
-                            libraryData.seatDetails
+                            libraryData.seatDetails.subList(
+                                2 * libraryData.seats!!, seatDetailsListSize
+                            )
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
-                                2 * libraryData.seats!!, seatDetailsListSize - 1
+                                2 * libraryData.seats!!, seatDetailsListSize
                             ).forEach { seat ->
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)
@@ -260,7 +255,7 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this,
                             libraryData.seats!!,
                             libraryData.vacantSeats?.get(0)!!,
-                            libraryData.seatDetails
+                            libraryData.seatDetails.subList(0, libraryData.seats!!)
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(0, libraryData.seats!!)
@@ -283,11 +278,13 @@ class CurrentAttendanceActivity : AppCompatActivity() {
                             this,
                             libraryData.seats!!,
                             libraryData.vacantSeats?.get(1)!!,
-                            libraryData.seatDetails
+                            libraryData.seatDetails.subList(
+                                libraryData.seats!!, seatDetailsListSize
+                            )
                         ) {
                             selectedSeat = it
                             libraryData.seatDetails.subList(
-                                libraryData.seats!!, seatDetailsListSize - 1
+                                libraryData.seats!!, seatDetailsListSize
                             ).forEach { seat ->
                                 if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
                                     callUserDetailsApi(seat.bookedBy)

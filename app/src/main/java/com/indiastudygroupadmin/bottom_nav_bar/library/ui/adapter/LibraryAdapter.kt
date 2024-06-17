@@ -19,22 +19,19 @@ import com.indiastudygroupadmin.add_regular_student.ui.AddRegularStudentActivity
 import com.indiastudygroupadmin.bottom_nav_bar.library.ui.LibraryDetailsActivity
 import com.indiastudygroupadmin.databinding.LibraryShowItemLayoutBinding
 import com.indiastudygroupadmin.qr.QrCodeShowActivity
+import java.util.Locale
 
 class LibraryAdapter(
-    val context: Context, private val list: ArrayList<LibraryResponseItem>
+    val context: Context, private val originalList: ArrayList<LibraryResponseItem>
 ) : Adapter<LibraryAdapter.MyViewHolder>() {
+
+    private var filteredList: ArrayList<LibraryResponseItem> = ArrayList(originalList)
+
     inner class MyViewHolder(val binding: LibraryShowItemLayoutBinding) : ViewHolder(binding.root) {
         fun bindView(library: LibraryResponseItem, context: Context, position: Int) {
-
-//            binding.favourite.setOnClickListener {
-//                binding.favourite.setCardBackgroundColor(Color.RED)
-//            }
-
             binding.rvDays.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             binding.tvName.text = library.name
-//            binding.tvSeats.text = "${library.vacantSeats} / ${library.seats} seats vacant"
-
             binding.tvPrice.text = HtmlCompat.fromHtml(
                 "<b><font color='#5669FF'>₹${library.pricing?.daily}</font></b> /Day<br/>",
                 HtmlCompat.FROM_HTML_MODE_LEGACY
@@ -59,24 +56,17 @@ class LibraryAdapter(
                     binding.tvSeats22.text = "${seats[1]} / ${library.seats}"
                     binding.tvSeats11.text = "${seats[0]} / ${library.seats}"
 
-
                     val timeStartFormatted2 = formatTime(library.timing[2].from?.toInt(), 0)
                     val timeEndFormatted2 = formatTime(library.timing[2].to?.toInt(), 0)
-
                     binding.tvTime2.text = "$timeStartFormatted2 to $timeEndFormatted2"
-
 
                     val timeStartFormatted1 = formatTime(library.timing[1].from?.toInt(), 0)
                     val timeEndFormatted1 = formatTime(library.timing[1].to?.toInt(), 0)
-
-                    binding.tvTime2.text = "$timeStartFormatted1 to $timeEndFormatted1"
-
+                    binding.tvTime1.text = "$timeStartFormatted1 to $timeEndFormatted1"
 
                     val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
                     val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
-
                     binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
-
                 }
 
                 2 -> {
@@ -84,13 +74,10 @@ class LibraryAdapter(
                     binding.tvSeats11.text = "${seats[0]} / ${library.seats}"
                     val timeStartFormatted1 = formatTime(library.timing[1].from?.toInt(), 0)
                     val timeEndFormatted1 = formatTime(library.timing[1].to?.toInt(), 0)
-
                     binding.tvTime2.text = "$timeStartFormatted1 to $timeEndFormatted1"
-
 
                     val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
                     val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
-
                     binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
 
                     binding.tvSeats33.visibility = View.GONE
@@ -103,8 +90,6 @@ class LibraryAdapter(
 
                     val timeStartFormatted = formatTime(library.timing[0].from?.toInt(), 0)
                     val timeEndFormatted = formatTime(library.timing[0].to?.toInt(), 0)
-
-
                     binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
 
                     binding.tvSeats22.visibility = View.GONE
@@ -113,59 +98,8 @@ class LibraryAdapter(
                     binding.tvSeats3.visibility = View.GONE
                     binding.tvSeats33.visibility = View.GONE
                     binding.tvTime3.visibility = View.GONE
-
                 }
             }
-
-
-//            val timing = library.timing
-//
-//            when (timing.size) {
-//                3 -> {
-//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
-//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
-//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
-//
-//                    val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
-//                    val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
-//
-//                    binding.timeAfternoon.text =
-//                        "Afternoon : $timeStartFormatted1 to $timeEndFormatted1"
-//
-//                    val timeStartFormatted2 = formatTime(timing[2].from?.toInt(), 0)
-//                    val timeEndFormatted2 = formatTime(timing[2].to?.toInt(), 0)
-//
-//
-//
-//                    binding.timeEvening.text =
-//                        "Evening : $timeStartFormatted2 to $timeEndFormatted2"
-//                }
-//
-//                2 -> {
-//
-//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
-//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
-//
-//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
-//
-//                    val timeStartFormatted1 = formatTime(timing[1].from?.toInt(), 0)
-//                    val timeEndFormatted1 = formatTime(timing[1].to?.toInt(), 0)
-//
-//                    binding.timeAfternoon.text =
-//                        "Afternoon : $timeStartFormatted1 to $timeEndFormatted1"
-//                    binding.timeEvening.visibility = View.GONE
-//                }
-//
-//                1 -> {
-//
-//                    val timeStartFormatted = formatTime(timing[0].from?.toInt(), 0)
-//                    val timeEndFormatted = formatTime(timing[0].to?.toInt(), 0)
-//
-//                    binding.timeMorning.text = "Morning : $timeStartFormatted to $timeEndFormatted"
-//                    binding.timeEvening.visibility = View.GONE
-//                    binding.timeAfternoon.visibility = View.GONE
-//                }
-//            }
 
             binding.tvAddress.text =
                 "${library.address?.street}, ${library.address?.district}, ${library.address?.state}, ${library.address?.pincode}"
@@ -189,14 +123,25 @@ class LibraryAdapter(
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-
-        list[position].let {
+        filteredList[position].let {
             holder.bindView(it, context, position)
         }
+    }
+
+    fun filter(query: String) {
+        val searchText = query.toLowerCase(Locale.getDefault())
+        filteredList = if (searchText.length < 1) {
+            ArrayList(originalList)
+        } else {
+            originalList.filter { library ->
+                library.name?.toLowerCase(Locale.getDefault())?.contains(searchText) == true
+            } as ArrayList<LibraryResponseItem>
+        }
+        notifyDataSetChanged()
     }
 
     private fun showPopupMenu(
@@ -211,7 +156,6 @@ class LibraryAdapter(
                     val intent = Intent(context, QrCodeShowActivity::class.java)
                     intent.putExtra("name", name ?: "")
                     intent.putExtra("libId", libId ?: "")
-
                     context.startActivity(intent)
                     true
                 }

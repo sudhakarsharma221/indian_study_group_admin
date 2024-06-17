@@ -61,7 +61,7 @@
         app:itemCount="6"
         app:itemHeight="50dp"
         app:itemRadius="10dp"
-        app:itemWidth="50dp"
+        app:itemWidth="45dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/phoneNo"
@@ -114,8 +114,8 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_margin="5dp"
                     android:src="@drawable/baseline_arrow_forward_24" />
             </androidx.cardview.widget.CardView>
@@ -135,7 +135,7 @@
         android:gravity="start"
         android:text="We’ve send you the verification code on +91721058****"
         android:textColor="@color/black_app"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/textView" />

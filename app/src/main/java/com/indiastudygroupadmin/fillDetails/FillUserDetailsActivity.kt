@@ -16,4 +16,9 @@ class FillUserDetailsActivity : AppCompatActivity() {
         window.statusBarColor = Color.WHITE
 
     }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishAffinity()
+    }
+
 }

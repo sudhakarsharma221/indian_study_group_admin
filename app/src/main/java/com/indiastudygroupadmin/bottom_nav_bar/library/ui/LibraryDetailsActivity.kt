@@ -355,7 +355,7 @@ class LibraryDetailsActivity : AppCompatActivity() {
                     val timeEndFormatted2 =
                         formatTime(libraryData.libData?.timing?.get(2)?.to?.toInt(), 0)
 
-                    binding.tvTime2.text = "$timeStartFormatted2 to $timeEndFormatted2"
+                    binding.tvTime3.text = "$timeStartFormatted2 to $timeEndFormatted2"
 
 
                     val timeStartFormatted1 =
@@ -405,11 +405,7 @@ class LibraryDetailsActivity : AppCompatActivity() {
                         formatTime(libraryData.libData?.timing?.get(0)?.from?.toInt(), 0)
                     val timeEndFormatted =
                         formatTime(libraryData.libData?.timing?.get(0)?.to?.toInt(), 0)
-                    Log.d(
-                        "TIMECHECK", "${libraryData.libData?.timing?.get(0)?.from?.toInt()} to ${
-                            libraryData.libData?.timing?.get(0)?.to?.toInt()
-                        }"
-                    )
+
 
                     binding.tvTime1.text = "$timeStartFormatted to $timeEndFormatted"
 

@@ -20,11 +20,23 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+            buildConfigField(
+                "String", "API_BASE_URL", "\"https://indian-study-group-pqyn.onrender.com/\""
             )
+            buildConfigField("String", "PINCODE_BASE_URL", "\"https://api.postalpincode.in/\"")
+            buildConfigField("String", "EMAIL_URL", "\"https://send.api.mailtrap.io/\"")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+        debug {
+            buildConfigField(
+                "String", "API_BASE_URL", "\"https://indian-study-group-pqyn.onrender.com/\""
+            )
+            buildConfigField("String", "PINCODE_BASE_URL", "\"https://api.postalpincode.in/\"")
+            buildConfigField("String", "EMAIL_URL", "\"https://send.api.mailtrap.io/\"")
         }
     }
     compileOptions {
@@ -36,6 +48,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

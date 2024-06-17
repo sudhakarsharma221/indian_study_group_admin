@@ -67,11 +67,16 @@ class MoreFragment : Fragment() {
 
     private fun initListener() {
 
+
         binding.studentData.setOnClickListener {
+//            ToastUtil.makeToast(requireContext(), "Coming Soon...")
+
             IntentUtil.startIntent(requireContext(), StudentDataActivity())
         }
         binding.tvWallet.setOnClickListener {
-            IntentUtil.startIntent(requireContext(), WalletActivity())
+            ToastUtil.makeToast(requireContext(), "Coming Soon...")
+
+            //IntentUtil.startIntent(requireContext(), WalletActivity())
         }
         binding.tvSetting.setOnClickListener {
             IntentUtil.startIntent(requireContext(), SettingActivity())

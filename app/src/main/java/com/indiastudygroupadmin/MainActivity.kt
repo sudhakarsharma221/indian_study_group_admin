@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        finishAffinity()
         super.onBackPressed()
         ApiCallsConstant.apiCallsOnceHome = false
         ApiCallsConstant.apiCallsOnceLibrary = false

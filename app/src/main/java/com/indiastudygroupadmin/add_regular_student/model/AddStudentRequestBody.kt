@@ -11,5 +11,4 @@ data class AddStudentRequestBody(
     @SerializedName("endTimeHour") val endTimeHour: String? = null,
     @SerializedName("endTimeMinute") val endTimeMinute: String? = null,
 
-
     )

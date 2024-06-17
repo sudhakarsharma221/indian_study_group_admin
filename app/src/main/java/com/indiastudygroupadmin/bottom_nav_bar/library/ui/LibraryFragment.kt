@@ -8,7 +8,10 @@ import android.graphics.Color
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.KeyEvent
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -89,6 +92,8 @@ class LibraryFragment : Fragment() {
 
 
     private fun initListener() {
+        searchViewFunction()
+
         binding.filterButton.setOnClickListener {
             showFilterDialog()
         }
@@ -116,6 +121,48 @@ class LibraryFragment : Fragment() {
         }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun searchViewFunction() {
+        binding.searchEt.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString()
+                adapter.filter(query)
+                if (adapter.itemCount == 0) {
+                    binding.noLibAvailable.visibility = View.VISIBLE
+                } else {
+                    binding.noLibAvailable.visibility = View.GONE
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        })
+        binding.searchEt.setOnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                binding.searchEt.clearFocus()
+                true
+            } else {
+                false
+            }
+        }
+
+//        // OnFocusChangeListener to handle focus changes
+//        binding.searchEt.setOnFocusChangeListener { v, hasFocus ->
+//            if (!hasFocus) {
+//                binding.topPicksLayout.visibility = View.GONE
+//                binding.allLibRecyclerView.visibility = View.GONE
+//                binding.pincodeRecyclerView.visibility = View.VISIBLE
+//                binding.backButton.visibility = View.GONE
+//            } else {
+//                binding.backButton.visibility = View.VISIBLE
+//                binding.topPicksLayout.visibility = View.VISIBLE
+//                binding.pincodeRecyclerView.visibility = View.GONE
+//            }
+//        }
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

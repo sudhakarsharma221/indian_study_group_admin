@@ -167,6 +167,7 @@ class AttendanceHistoryActivity : AppCompatActivity() {
 
                     intent.putExtra("historyList", historyList)
                     intent.putExtra("date", date)
+                    intent.putExtra("slotNumber", slot)
                     intent.putExtra("slot", selectedTimeFromList)
                     intent.putExtra("totalSeats", libraryData.seats)
                     intent.putExtra(
