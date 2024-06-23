@@ -2,26 +2,18 @@ package com.indiastudygroupadmin.bottom_nav_bar.attendance.ui
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
-import com.indiastudygroupadmin.app_utils.ApiCallsConstant
 import com.indiastudygroupadmin.app_utils.AppConstant
-import com.indiastudygroupadmin.app_utils.ToastUtil
-import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
-import com.indiastudygroupadmin.bottom_nav_bar.library.viewModel.LibraryViewModel
+import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.AttendanceGymAdapter
 import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.AttendanceLibraryAdapter
+import com.indiastudygroupadmin.bottom_nav_bar.gym.ui.adapter.GymAdapter
 import com.indiastudygroupadmin.databinding.FragmentScheduleBinding
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
-import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
-import java.util.LinkedList
-import java.util.Queue
 
 
 class ScheduleFragment : Fragment() {
@@ -32,7 +24,8 @@ class ScheduleFragment : Fragment() {
     private lateinit var userData: UserDetailsResponseModel
 
     //    private lateinit var libraryDetailsViewModel: LibraryViewModel
-    private lateinit var adapter: AttendanceLibraryAdapter
+    private lateinit var libraryAdapter: AttendanceLibraryAdapter
+    private lateinit var gymAdapter: AttendanceGymAdapter
 //    private lateinit var libraryList: ArrayList<LibraryResponseItem>
 //    private val libraryIdQueue: Queue<String> = LinkedList()
 
@@ -59,14 +52,19 @@ class ScheduleFragment : Fragment() {
     private fun initListener() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        if (AppConstant.libraryList.isEmpty()) {
-            binding.noSchedule.visibility = View.VISIBLE
-            binding.swiperefresh.visibility = View.GONE
-        } else {
+        if (AppConstant.libraryList.isNotEmpty()) {
             binding.noSchedule.visibility = View.GONE
             binding.swiperefresh.visibility = View.VISIBLE
-            adapter = AttendanceLibraryAdapter(requireContext(), AppConstant.libraryList)
-            binding.recyclerView.adapter = adapter
+            libraryAdapter = AttendanceLibraryAdapter(requireContext(), AppConstant.libraryList)
+            binding.recyclerView.adapter = libraryAdapter
+        } else if (AppConstant.gymList.isNotEmpty()) {
+            binding.noSchedule.visibility = View.GONE
+            binding.swiperefresh.visibility = View.VISIBLE
+            gymAdapter = AttendanceGymAdapter(requireContext(), AppConstant.gymList)
+            binding.recyclerView.adapter = gymAdapter
+        } else {
+            binding.noSchedule.visibility = View.VISIBLE
+            binding.swiperefresh.visibility = View.GONE
         }
 
 //

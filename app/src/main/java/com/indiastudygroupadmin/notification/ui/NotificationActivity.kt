@@ -42,6 +42,28 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
+
+//        binding.apply {
+//            markAsRead.setOnClickListener {
+//                for (notification in notificationList) {
+//                    if (notification.status == "unread") notificationViewModel.callPostChangeNotificationStatus(
+//                        auth.currentUser!!.uid,
+//                        NotificationStatusChangeRequestModel(notification.id)
+//                    )
+//                }
+//
+//            }
+//            markAsReadIcon.setOnClickListener {
+//                for (notification in notificationList) {
+//                    if (notification.status == "unread") notificationViewModel.callPostChangeNotificationStatus(
+//                        auth.currentUser!!.uid,
+//                        NotificationStatusChangeRequestModel(notification.id)
+//                    )
+//                }
+//            }
+//        }
+
+
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         notificationList = arrayListOf()
 

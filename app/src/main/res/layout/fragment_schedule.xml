@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:fontFamily="@font/poppins"
-        android:text="Choose Library"
+        android:text="Choose"
         android:textColor="@color/black_app"
         android:textSize="15sp"
         app:layout_constraintStart_toStartOf="parent"

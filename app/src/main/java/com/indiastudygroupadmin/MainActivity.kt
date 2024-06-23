@@ -1,6 +1,5 @@
 package com.indiastudygroupadmin
 
-import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
+import com.indiastudygroupadmin.addGym.AddGymActivity
 import com.indiastudygroupadmin.addLibrary.AddLibraryActivity
 import com.indiastudygroupadmin.app_utils.ApiCallsConstant
 import com.indiastudygroupadmin.app_utils.IntentUtil
@@ -22,7 +22,7 @@ import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var viewModel: UserDetailsViewModel
+    private lateinit var userDetailsViewModel: UserDetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        viewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
+        userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
             IntentUtil.startIntent(this, SignInActivity())
@@ -48,7 +48,12 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
         binding.addLibrary.setOnClickListener {
-            IntentUtil.startIntent(this, AddLibraryActivity())
+            val userData = userDetailsViewModel.getUserDetailsResponse()
+            if (userData?.authType == "gym owner") {
+                IntentUtil.startIntent(this, AddGymActivity())
+            } else if (userData?.authType == "library owner") {
+                IntentUtil.startIntent(this, AddLibraryActivity())
+            }
         }
 
     }

@@ -40,6 +40,7 @@ class OtpActivity : AppCompatActivity() {
     private lateinit var credential: PhoneAuthCredential
     private var fromSignUp: Boolean? = true
     private lateinit var phoneNo: String
+    private lateinit var ownerType: String
     private lateinit var userName: String
     private lateinit var togoPhoneNo: String
     private lateinit var fcmToken: String
@@ -74,6 +75,7 @@ class OtpActivity : AppCompatActivity() {
 
         phoneNo = "+91" + intent.getStringExtra("phoneNumber")
         userName = intent.getStringExtra("userName").toString()
+        ownerType = intent.getStringExtra("ownerType").toString()
         togoPhoneNo = intent.getStringExtra("phoneNumber").toString()
         fromSignUp = intent.getBooleanExtra("fromSignUp", false)
 
@@ -255,8 +257,8 @@ class OtpActivity : AppCompatActivity() {
                         UserDetailsPostRequestBodyModel(
                             auth.currentUser!!.uid,
                             togoPhoneNo,
-                            "library owner",
-                            "library owner",
+                            ownerType,
+                            ownerType,
                             userName
                         )
                     )

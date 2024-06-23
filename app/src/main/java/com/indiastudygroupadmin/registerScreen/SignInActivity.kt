@@ -69,7 +69,7 @@ class SignInActivity : AppCompatActivity() {
     private fun observerUserExistsApiResponse() {
         viewModel.userExistResponse.observe(this, Observer {
             if (it.contactExist == true) {
-                if (it.authType == "library owner") {
+                if (it.authType == "library owner" || it.authType == "gym owner") {
                     val intent = Intent(this, OtpActivity::class.java)
                     intent.putExtra("phoneNumber", phoneNo)
                     startActivity(intent)

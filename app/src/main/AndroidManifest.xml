@@ -27,6 +27,19 @@
         android:theme="@style/Theme.IndianStudyGroupAdmin"
         tools:targetApi="31">
         <activity
+            android:name=".bottom_nav_bar.gym.ui.CoachDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".editGymRequest.EditGymRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bottom_nav_bar.gym.ui.GymDetailsActivity"
+            android:exported="false"
+            android:theme="@style/FullScreenTheme" />
+        <activity
+            android:name=".addGym.AddGymActivity"
+            android:exported="false" />
+        <activity
             android:name=".rating.ui.ReviewActivity"
             android:exported="false" />
         <activity

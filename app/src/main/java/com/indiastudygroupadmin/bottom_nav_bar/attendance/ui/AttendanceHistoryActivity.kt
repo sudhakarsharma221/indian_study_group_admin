@@ -6,29 +6,30 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ToastUtil
+import com.indiastudygroupadmin.bottom_nav_bar.gym.model.GymResponseItem
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.History
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.Timing
 import com.indiastudygroupadmin.databinding.ActivityAttendanceHistoryBinding
 import com.indiastudygroupadmin.databinding.ErrorBottomDialogLayoutBinding
+import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 class AttendanceHistoryActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAttendanceHistoryBinding
     private lateinit var libraryData: LibraryResponseItem
+    private lateinit var gymData: GymResponseItem
     private var selectedTimeFromList = ""
+    private lateinit var userDetailsViewModel: UserDetailsViewModel
     private var slot = 0
     private lateinit var selectedTimeButton: TextView
 
@@ -37,32 +38,122 @@ class AttendanceHistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAttendanceHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         window.statusBarColor = Color.WHITE
         val receivedIntent = intent
 
-        if (receivedIntent.hasExtra("LibraryData")) {
-            val userDetails: LibraryResponseItem? = receivedIntent.getParcelableExtra("LibraryData")
-            userDetails?.let {
-                libraryData = it
-                initListener()
-                1
+        val userData = userDetailsViewModel.getUserDetailsResponse()
+        if (userData?.authType == "gym owner") {
+            if (receivedIntent.hasExtra("GymData")) {
+                val userDetails: GymResponseItem? = receivedIntent.getParcelableExtra("GymData")
+                userDetails?.let {
+                    gymData = it
+                    initListenerGym()
+                    1
+                }
+            } else {
+                ToastUtil.makeToast(this, "Library Data not found")
+                finish()
             }
-        } else {
-            ToastUtil.makeToast(this, "Library Data not found")
-            finish()
+        } else if (userData?.authType == "library owner") {
+
+            if (receivedIntent.hasExtra("LibraryData")) {
+                val userDetails: LibraryResponseItem? =
+                    receivedIntent.getParcelableExtra("LibraryData")
+                userDetails?.let {
+                    libraryData = it
+                    initListenerLibrary()
+                    1
+                }
+            } else {
+                ToastUtil.makeToast(this, "Library Data not found")
+                finish()
+            }
+        }
+
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initListenerGym() {
+        val timing = gymData.timing
+
+        setTimeFunction(timing)
+        binding.proceedButton.setOnClickListener {
+            val date = binding.chooseDate.text.toString()
+            val historyList = ArrayList<History>()
+            if (date == "Choose Date") {
+                binding.requireDate.visibility = View.VISIBLE
+            } else if (selectedTimeFromList.isEmpty()) {
+                binding.requireTime.visibility = View.VISIBLE
+            } else {
+                gymData.history!!.forEach { history ->
+                    if (history.date?.substring(0, 10) == date && slot == history.slot) {
+                        historyList.add(history)
+                    }
+                }
+                if (historyList.isNotEmpty()) {
+                    val intent = Intent(this, AttendanceHistoryShowActivity::class.java)
+
+                    intent.putExtra("historyList", historyList)
+                    intent.putExtra("date", date)
+                    intent.putExtra("slotNumber", slot)
+                    intent.putExtra("slot", selectedTimeFromList)
+                    intent.putExtra("totalSeats", gymData.seats)
+                    intent.putExtra(
+                        "vacantSeats", (gymData.seats?.minus(
+                            historyList.size
+                        ))
+                    )
+                    startActivity(intent)
+                } else {
+                    showErrorBottomDialog("You do not have any booking for this date")
+                }
+            }
         }
     }
 
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initListener() {
-        val currentInstant = Instant.now()
-        val formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC)
-        val formattedDate = formatter.format(currentInstant)
-
-
+    private fun initListenerLibrary() {
         val timing = libraryData.timing
 
+        setTimeFunction(timing)
+        binding.proceedButton.setOnClickListener {
+            val date = binding.chooseDate.text.toString()
+            val historyList = ArrayList<History>()
+            if (date == "Choose Date") {
+                binding.requireDate.visibility = View.VISIBLE
+            } else if (selectedTimeFromList.isEmpty()) {
+                binding.requireTime.visibility = View.VISIBLE
+            } else {
+                libraryData.history!!.forEach { history ->
+                    if (history.date?.substring(0, 10) == date && slot == history.slot) {
+                        historyList.add(history)
+                    }
+                }
+                if (historyList.isNotEmpty()) {
+                    val intent = Intent(this, AttendanceHistoryShowActivity::class.java)
+
+                    intent.putExtra("historyList", historyList)
+                    intent.putExtra("date", date)
+                    intent.putExtra("slotNumber", slot)
+                    intent.putExtra("slot", selectedTimeFromList)
+                    intent.putExtra("totalSeats", libraryData.seats)
+                    intent.putExtra(
+                        "vacantSeats", (libraryData.seats?.minus(
+                            historyList.size
+                        ))
+                    )
+                    startActivity(intent)
+                } else {
+                    showErrorBottomDialog("You do not have any booking for this date")
+                }
+            }
+        }
+    }
+
+    private fun setTimeFunction(timing: ArrayList<Timing>) {
         when (timing.size) {
             3 -> {
                 val timeStartFormatted2 = formatTime(timing[2].from?.toInt(), 0)
@@ -148,38 +239,6 @@ class AttendanceHistoryActivity : AppCompatActivity() {
 
         binding.backButton.setOnClickListener {
             finish()
-        }
-        binding.proceedButton.setOnClickListener {
-            val date = binding.chooseDate.text.toString()
-            val historyList = ArrayList<History>()
-            if (date == "Choose Date") {
-                binding.requireDate.visibility = View.VISIBLE
-            } else if (selectedTimeFromList.isEmpty()) {
-                binding.requireTime.visibility = View.VISIBLE
-            } else {
-                libraryData.history!!.forEach { history ->
-                    if (history.date?.substring(0, 10) == date && slot == history.slot) {
-                        historyList.add(history)
-                    }
-                }
-                if (historyList.isNotEmpty()) {
-                    val intent = Intent(this, AttendanceHistoryShowActivity::class.java)
-
-                    intent.putExtra("historyList", historyList)
-                    intent.putExtra("date", date)
-                    intent.putExtra("slotNumber", slot)
-                    intent.putExtra("slot", selectedTimeFromList)
-                    intent.putExtra("totalSeats", libraryData.seats)
-                    intent.putExtra(
-                        "vacantSeats", (libraryData.seats?.minus(
-                            historyList.size
-                        ))
-                    )
-                    startActivity(intent)
-                } else {
-                    showErrorBottomDialog("You do not have any booking for this date")
-                }
-            }
         }
     }
 

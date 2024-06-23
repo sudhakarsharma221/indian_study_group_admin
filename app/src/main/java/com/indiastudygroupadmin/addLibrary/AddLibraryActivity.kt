@@ -464,6 +464,7 @@ class AddLibraryActivity : AppCompatActivity() {
         val dialog = builder.create()
         dialog.show()
     }
+
     private fun getAmenitiesWithDrawable(
         amenities: List<String>?, amenityMappings: Map<String, Pair<String, Int>>
     ): List<AmenityItem> {

@@ -10,6 +10,7 @@ object AppUrlsEndpoint {
     const val POST_RATING = "api/library/addrating"
     const val PINCODE_DETAILS = "pincode/{pinCode}"
     const val GET_LIBRARY = "api/newlibrary/"
+    const val GET_GYM = "api/newgym/"
     const val GET_INFO = "api/get-info"
     const val SEND_EMAIL = "api/send"
     const val NOTIFICATION_STATUS = "api/changeNotificationStatus"

@@ -18,6 +18,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.indiastudygroupadmin.R
 import com.indiastudygroupadmin.app_utils.ApiCallsConstant
+import com.indiastudygroupadmin.app_utils.AppConstant
 import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.more.help_desk.HelpDeskActivity
@@ -107,6 +108,8 @@ class MoreFragment : Fragment() {
             ToastUtil.makeToast(requireContext(), "Successful Sign Out")
             IntentUtil.startIntent(requireContext(), SignInActivity())
             ApiCallsConstant.apiCallsOnceHome = false
+            AppConstant.libraryList.clear()
+            AppConstant.gymList.clear()
             requireActivity().finish()
         }
     }

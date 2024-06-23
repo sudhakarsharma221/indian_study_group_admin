@@ -82,8 +82,8 @@ class LibraryDetailsActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        HideStatusBarUtil.hideStatusBar(this)
         binding = ActivityLibraryDetailsBinding.inflate(layoutInflater)
+        HideStatusBarUtil.hideStatusBar(this)
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
         emailViewModel = ViewModelProvider(this)[EmailViewModel::class.java]

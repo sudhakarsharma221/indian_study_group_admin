@@ -68,6 +68,7 @@ class SplashScreenActivity : AppCompatActivity() {
     private fun observerUserDetailsApiResponse() {
         userDetailsViewModel.userDetailsResponse.observe(this, Observer {
             userData = it
+            userDetailsViewModel.setUserDetailsResponse(it)
             if (it.name?.trim().isNullOrEmpty() || it.address?.pincode?.trim().isNullOrEmpty()) {
                 IntentUtil.startIntent(this@SplashScreenActivity, FillUserDetailsActivity())
                 finish()

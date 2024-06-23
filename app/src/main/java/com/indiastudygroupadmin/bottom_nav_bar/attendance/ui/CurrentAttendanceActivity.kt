@@ -15,9 +15,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.indiastudygroupadmin.R
+import com.indiastudygroupadmin.addGym.AddGymActivity
+import com.indiastudygroupadmin.addLibrary.AddLibraryActivity
+import com.indiastudygroupadmin.app_utils.IntentUtil
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.adapter.SeatAdapter
+import com.indiastudygroupadmin.bottom_nav_bar.gym.model.GymResponseItem
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
+import com.indiastudygroupadmin.bottom_nav_bar.library.model.Timing
 import com.indiastudygroupadmin.databinding.ActivityCurrentAttendanceBinding
 import com.indiastudygroupadmin.userDetailsApi.model.UserDetailsResponseModel
 import com.indiastudygroupadmin.userDetailsApi.viewModel.UserDetailsViewModel
@@ -28,6 +33,7 @@ import java.time.format.DateTimeFormatter
 class CurrentAttendanceActivity : AppCompatActivity() {
     private var timingSize = 0
     private lateinit var libraryData: LibraryResponseItem
+    private lateinit var gymData: GymResponseItem
     private lateinit var userDetailsViewModel: UserDetailsViewModel
     private lateinit var userData: UserDetailsResponseModel
     private var selectedTimingFromList = ""
@@ -47,25 +53,41 @@ class CurrentAttendanceActivity : AppCompatActivity() {
         window.statusBarColor = Color.WHITE
         setContentView(binding.root)
         val receivedIntent = intent
-
-        if (receivedIntent.hasExtra("LibraryData")) {
-            val userDetails: LibraryResponseItem? = receivedIntent.getParcelableExtra("LibraryData")
-            userDetails?.let {
-                libraryData = it
-                initListener()
-                1
+        val userData = userDetailsViewModel.getUserDetailsResponse()
+        if (userData?.authType == "gym owner") {
+            if (receivedIntent.hasExtra("GymData")) {
+                val userDetails: GymResponseItem? = receivedIntent.getParcelableExtra("GymData")
+                userDetails?.let {
+                    gymData = it
+                    initListenerGym()
+                    1
+                }
+            } else {
+                ToastUtil.makeToast(this, "Library Data not found")
+                finish()
             }
-        } else {
-            ToastUtil.makeToast(this, "Library Data not found")
-            finish()
+        } else if (userData?.authType == "library owner") {
+            if (receivedIntent.hasExtra("LibraryData")) {
+                val userDetails: LibraryResponseItem? =
+                    receivedIntent.getParcelableExtra("LibraryData")
+                userDetails?.let {
+                    libraryData = it
+                    initListenerLibrary()
+                    1
+                }
+            } else {
+                ToastUtil.makeToast(this, "Library Data not found")
+                finish()
+            }
         }
+
         observeProgress()
         observerErrorMessageApiResponse()
         observerUserDetailsApiResponse()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun initListener() {
+    private fun initListenerGym() {
         ToastUtil.makeToast(this, "Select a Slot")
         binding.recyclerView.layoutManager = GridLayoutManager(this, 6)
 
@@ -74,17 +96,66 @@ class CurrentAttendanceActivity : AppCompatActivity() {
         setButtonState(binding.buttonSlot3, false)
 
         binding.buttonSlot1.setOnClickListener {
-            toggleButtonState(binding.buttonSlot1)
+            toggleButtonStateGym(binding.buttonSlot1)
         }
         binding.buttonSlot2.setOnClickListener {
-            toggleButtonState(binding.buttonSlot2)
+            toggleButtonStateGym(binding.buttonSlot2)
         }
         binding.buttonSlot3.setOnClickListener {
-            toggleButtonState(binding.buttonSlot3)
+            toggleButtonStateGym(binding.buttonSlot3)
+        }
+
+        val timing = gymData.timing
+        timingSize = timing.size
+        setTimeFunction(timing)
+
+        binding.backButton.setOnClickListener {
+            finish()
+        }
+        binding.historyButton.setOnClickListener {
+            val intent = Intent(this, AttendanceHistoryActivity::class.java)
+            intent.putExtra("GymData", gymData)
+            startActivity(intent)
+        }
+
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun initListenerLibrary() {
+        ToastUtil.makeToast(this, "Select a Slot")
+        binding.recyclerView.layoutManager = GridLayoutManager(this, 6)
+
+        setButtonState(binding.buttonSlot1, false)
+        setButtonState(binding.buttonSlot2, false)
+        setButtonState(binding.buttonSlot3, false)
+
+        binding.buttonSlot1.setOnClickListener {
+            toggleButtonStateLibrary(binding.buttonSlot1)
+        }
+        binding.buttonSlot2.setOnClickListener {
+            toggleButtonStateLibrary(binding.buttonSlot2)
+        }
+        binding.buttonSlot3.setOnClickListener {
+            toggleButtonStateLibrary(binding.buttonSlot3)
         }
 
         val timing = libraryData.timing
         timingSize = timing.size
+        setTimeFunction(timing)
+
+        binding.backButton.setOnClickListener {
+            finish()
+        }
+        binding.historyButton.setOnClickListener {
+            val intent = Intent(this, AttendanceHistoryActivity::class.java)
+            intent.putExtra("LibraryData", libraryData)
+            startActivity(intent)
+        }
+
+    }
+
+    private fun setTimeFunction(timing: ArrayList<Timing>) {
         when (timing.size) {
             3 -> {
                 val timeStartFormatted2 = formatTime(timing[2].from?.toInt(), 0)
@@ -141,19 +212,188 @@ class CurrentAttendanceActivity : AppCompatActivity() {
 
             }
         }
-
-        binding.backButton.setOnClickListener {
-            finish()
-        }
-        binding.historyButton.setOnClickListener {
-            val intent = Intent(this, AttendanceHistoryActivity::class.java)
-            intent.putExtra("LibraryData", libraryData)
-            startActivity(intent)
-        }
-
     }
 
-    private fun toggleButtonState(textView: TextView) {
+
+    private fun toggleButtonStateGym(textView: TextView) {
+        // Deselect previously selected button
+        if (::selectedTimingButton.isInitialized) {
+            selectedTimingButton.isSelected = false
+            setButtonState(selectedTimingButton, false)
+        }
+        // Select the clicked button
+        textView.isSelected = true
+        setButtonState(textView, true)
+        selectedTimingButton = textView
+        val text = textView.text.toString()
+        val seatDetailsListSize = gymData.seatDetails.size
+        selectedTimingFromList = text
+        when (timingSize) {
+            3 -> {
+                when (selectedTimingFromList) {
+                    slot1Time -> {
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(0)}/${gymData.seats} seats vacant"
+
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(0)!!,
+                            gymData.seatDetails.subList(0, gymData.seats!!)
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.subList(0, gymData.seats!!).forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+
+                    }
+
+                    slot2Time -> {
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(1)}/${gymData.seats} seats vacant"
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(1)!!,
+                            gymData.seatDetails.subList(
+                                gymData.seats!!, 2 * gymData.seats!!
+                            )
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.subList(
+                                gymData.seats!!, 2 * gymData.seats!!
+                            ).forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+
+                    }
+
+
+                    slot3Time -> {
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(2)}/${gymData.seats} seats vacant"
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(2)!!,
+                            gymData.seatDetails.subList(
+                                2 * gymData.seats!!, seatDetailsListSize
+                            )
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.subList(
+                                2 * gymData.seats!!, seatDetailsListSize
+                            ).forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+                    }
+
+                    else -> {
+                        ToastUtil.makeToast(this, "Select a slot")
+                    }
+                }
+            }
+
+            2 -> {
+                when (selectedTimingFromList) {
+                    slot1Time -> {
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(0)}/${gymData.seats} seats vacant"
+
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(0)!!,
+                            gymData.seatDetails.subList(0, gymData.seats!!)
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.subList(0, gymData.seats!!).forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+
+                    }
+
+                    slot2Time -> {
+
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(1)}/${gymData.seats} seats vacant"
+
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(1)!!,
+                            gymData.seatDetails.subList(
+                                gymData.seats!!, seatDetailsListSize
+                            )
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.subList(
+                                gymData.seats!!, seatDetailsListSize
+                            ).forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+
+                    }
+
+                    else -> {
+                        ToastUtil.makeToast(this, "Select a slot")
+                    }
+                }
+            }
+
+            1 -> {
+                when (selectedTimingFromList) {
+                    slot1Time -> {
+                        binding.tvSeats.text =
+                            "${gymData.vacantSeats?.get(0)}/${gymData.seats} seats vacant"
+
+                        adapter = SeatAdapter(
+                            this,
+                            gymData.seats!!,
+                            gymData.vacantSeats?.get(0)!!,
+                            gymData.seatDetails
+                        ) {
+                            selectedSeat = it
+                            gymData.seatDetails.forEach { seat ->
+                                if (seat.seatNumber == selectedSeat && !seat.bookedBy.isNullOrEmpty()) {
+                                    callUserDetailsApi(seat.bookedBy)
+                                }
+                            }
+                        }
+                        binding.recyclerView.adapter = adapter
+
+                    }
+
+                    else -> {
+                        ToastUtil.makeToast(this, "Select a slot")
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun toggleButtonStateLibrary(textView: TextView) {
         // Deselect previously selected button
         if (::selectedTimingButton.isInitialized) {
             selectedTimingButton.isSelected = false

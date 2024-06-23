@@ -5,6 +5,9 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -22,6 +25,7 @@ class SignUpActivity : AppCompatActivity() {
     private val namePattern = "^[a-zA-Z]+$"
     private lateinit var viewModel: UserDetailsViewModel
     private lateinit var phoneNo: String
+    private var spinnerText = ""
     private lateinit var userName: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,32 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun initListener() {
+        ArrayAdapter.createFromResource(
+            this, R.array.spinner_array_choose_owner_type, R.layout.custom_spinner_layout
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(R.layout.custom_spinner_dropdown)
+            binding.spinner.adapter = adapter
+        }
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+            ) {
+                spinnerText = parent?.getItemAtPosition(position).toString()
+                if (spinnerText == "Library Owner") {
+                    binding.error.visibility = View.GONE
+                } else if (spinnerText == "Gym Owner") {
+                    binding.error.visibility = View.GONE
+                }            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Toast.makeText(this@SignUpActivity, "Nothing Selected", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
+
+
         binding.tvLogin.setOnClickListener {
             IntentUtil.startIntent(this, SignInActivity())
         }
@@ -61,6 +91,8 @@ class SignUpActivity : AppCompatActivity() {
                 binding.usernameEt.error = "Enter Minimum 2 Characters"
             } else if (userName.length > 50) {
                 binding.usernameEt.error = "Enter Less Than 50 Characters"
+            } else if (spinnerText.isEmpty() || spinnerText == "Choose Owner Type") {
+                binding.error.visibility = View.VISIBLE
             } else {
                 showBottomDialog(phoneNo, userName)
             }
@@ -96,7 +128,7 @@ class SignUpActivity : AppCompatActivity() {
             if (it.userNameExist == true) {
                 showErrorBottomDialog("This Username already exists. Try Something different.")
             } else if (it.contactExist == true) {
-                if (it.authType == "library owner") {
+                if (it.authType == "library owner" || it.authType == "gym owner") {
                     ToastUtil.makeToast(this, "User already exist, please sign in")
                     val intent = Intent(this, SignInActivity::class.java)
                     startActivity(intent)
@@ -105,9 +137,16 @@ class SignUpActivity : AppCompatActivity() {
                     showErrorBottomDialog("You already have an account on student app. Please sign in on that application.")
                 }
             } else {
+                var ownerType = ""
+                if (spinnerText == "Library Owner") {
+                    ownerType = "library owner"
+                } else if (spinnerText == "Gym Owner") {
+                    ownerType = "gym owner"
+                }
                 val intent = Intent(this, OtpActivity::class.java)
                 intent.putExtra("phoneNumber", phoneNo)
                 intent.putExtra("userName", userName)
+                intent.putExtra("ownerType", ownerType)
                 intent.putExtra("fromSignUp", true)
                 startActivity(intent)
                 finish()
@@ -152,7 +191,7 @@ class SignUpActivity : AppCompatActivity() {
                 if (binding.phoneEt.text.toString().trim()
                         .isNotEmpty() && binding.phoneEt.text.toString().length < 10
                 ) {
-                    binding.phoneEt.error = "Enter Valid Mobile No"
+                    binding.phoneEt.error = "Enter Valid Phone No"
                 }
             }
         }

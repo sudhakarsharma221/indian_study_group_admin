@@ -20,6 +20,7 @@ data class UserDetailsResponseModel(
     @SerializedName("userPost") val userPost: ArrayList<String> = arrayListOf(),
     @SerializedName("authType") val authType: String? = null,
     @SerializedName("libraries") val libraries: ArrayList<String> = arrayListOf(),
+    @SerializedName("gyms") val gyms: ArrayList<String> = arrayListOf(),
     @SerializedName("address") val address: Address? = Address(),
     @SerializedName("bookings") val bookings: ArrayList<String> = arrayListOf(),
     @SerializedName("devices") val devices: ArrayList<String> = arrayListOf(),
@@ -45,6 +46,7 @@ data class UserDetailsResponseModel(
         parcel.createStringArrayList() ?: arrayListOf(),
         parcel.createStringArrayList() ?: arrayListOf(),
         parcel.readString(),
+        parcel.createStringArrayList() ?: arrayListOf(),
         parcel.createStringArrayList() ?: arrayListOf(),
         parcel.readParcelable(Address::class.java.classLoader),
         parcel.createStringArrayList() ?: arrayListOf(),
@@ -77,6 +79,7 @@ data class UserDetailsResponseModel(
         parcel.writeStringList(userPost)
         parcel.writeString(authType)
         parcel.writeStringList(libraries)
+        parcel.writeStringList(gyms)
         parcel.writeParcelable(address, flags)
         parcel.writeStringList(bookings)
         parcel.writeStringList(devices)

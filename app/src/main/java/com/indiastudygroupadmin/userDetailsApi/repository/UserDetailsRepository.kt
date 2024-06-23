@@ -42,16 +42,11 @@ class UserDetailsRepository {
                 if (response.isSuccessful) {
                     userDetailsIdResponse.postValue(body!!)
                 } else {
-
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        Log.d(
-                            "userDetailsIdResponse",
-                            "response fail :${response.errorBody().toString()}"
-                        )
-
-                        errorMessage.postValue(response.errorBody().toString())
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
@@ -80,16 +75,11 @@ class UserDetailsRepository {
                 if (response.isSuccessful) {
                     userDetailsResponse.postValue(body!!)
                 } else {
-
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        Log.d(
-                            "userDetailsResponse",
-                            "response fail :${response.errorBody().toString()}"
-                        )
-
-                        errorMessage.postValue(response.errorBody().toString())
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
@@ -121,15 +111,11 @@ class UserDetailsRepository {
                     userDetailsResponse.postValue(body!!)
 
                 } else {
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        errorMessage.postValue(response.errorBody().toString())
-                        Log.d(
-                            "userDetailsResponse",
-                            "response fail :${response.errorBody().toString()}"
-                        )
-
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
@@ -158,15 +144,11 @@ class UserDetailsRepository {
                 if (response.isSuccessful) {
                     userDetailsResponse.postValue(body!!)
                 } else {
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        errorMessage.postValue(response.errorBody().toString())
-                        Log.d(
-                            "userDetailsResponse",
-                            "response fail :${response.errorBody().toString()}"
-                        )
-
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
@@ -196,14 +178,11 @@ class UserDetailsRepository {
                     userExistResponse.postValue(body!!)
 
                 } else {
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        Log.d(
-                            "userDetailsResponse",
-                            "response fail :${response.errorBody().toString()}"
-                        )
-                        errorMessage.postValue(response.errorBody().toString())
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
@@ -233,12 +212,11 @@ class UserDetailsRepository {
                 if (response.isSuccessful) {
                     addFcmTokenResponse.postValue(body!!)
                 } else {
-                    val errorBody = response.errorBody()?.string() // Extract error body as string
-                    Log.d("addFcmTokenResponse", "response fail : $errorBody")
-                    if (response.code() == AppConstant.USER_NOT_FOUND) {
-                        errorMessage.postValue("User not exist please sign up")
-                    } else {
-                        errorMessage.postValue(errorBody!!)
+                    val errorResponse = response.errorBody()?.string()
+                    Log.d("userDetailsResponse", "response fail :$errorResponse")
+                    when (response.code()) {
+                        AppConstant.USER_NOT_FOUND -> errorMessage.postValue("User not exist, please sign up")
+                        else -> errorMessage.postValue("Error: $errorResponse")
                     }
                 }
             }
