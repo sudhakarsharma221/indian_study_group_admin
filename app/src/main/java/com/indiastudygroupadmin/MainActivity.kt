@@ -4,6 +4,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -33,22 +34,32 @@ class MainActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().isAutoInitEnabled = true
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful) {
-                Log.d("TOKENFIREBASE", it.result.toString())
             }
         }
-
-
         userDetailsViewModel = ViewModelProvider(this)[UserDetailsViewModel::class.java]
         auth = FirebaseAuth.getInstance()
         if (auth.currentUser == null) {
             IntentUtil.startIntent(this, SignInActivity())
             finish()
         }
-        val navView: BottomNavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        navView.setupWithNavController(navController)
+        val userData = userDetailsViewModel.getUserDetailsResponse()
+
+        if (userData?.authType == "gym owner") {
+            binding.navView.visibility = View.GONE
+            val navView: BottomNavigationView = binding.navView2
+
+            val navController = findNavController(R.id.nav_host_fragment_activity_main)
+            navView.setupWithNavController(navController)
+        } else if (userData?.authType == "library owner") {
+            binding.navView2.visibility = View.GONE
+            val navView: BottomNavigationView = binding.navView
+
+            val navController = findNavController(R.id.nav_host_fragment_activity_main)
+            navView.setupWithNavController(navController)
+
+        }
+
         binding.addLibrary.setOnClickListener {
-            val userData = userDetailsViewModel.getUserDetailsResponse()
             if (userData?.authType == "gym owner") {
                 IntentUtil.startIntent(this, AddGymActivity())
             } else if (userData?.authType == "library owner") {

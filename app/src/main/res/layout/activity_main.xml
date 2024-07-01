@@ -7,7 +7,6 @@
     tools:context=".MainActivity">
 
 
-
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
         android:layout_width="match_parent"
@@ -28,6 +27,17 @@
             app:itemPaddingTop="20dp"
             app:itemTextColor="#262626"
             app:menu="@menu/bottom_menu" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/nav_view_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:itemActiveIndicatorStyle="@drawable/bottom_nav_colors"
+            app:itemIconTint="#262626"
+            app:itemPaddingTop="20dp"
+            app:itemTextColor="#262626"
+            app:menu="@menu/bottom_menu_2" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 

@@ -8,22 +8,31 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.indiastudygroupadmin.R
+import com.indiastudygroupadmin.add_regular_student.model.AddStudentRequestBody
+import com.indiastudygroupadmin.add_regular_student.viewModel.AddRegularStudentViewModel
 import com.indiastudygroupadmin.app_utils.ToastUtil
 import com.indiastudygroupadmin.bottom_nav_bar.library.model.LibraryResponseItem
 import com.indiastudygroupadmin.databinding.ActivityAddRegularStudentBinding
+import com.indiastudygroupadmin.email.EmailRequestModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.concurrent.TimeUnit
 
 class AddRegularStudentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddRegularStudentBinding
     private var selectedTimeFromList = ""
     private lateinit var selectedTimeButton: TextView
     private lateinit var libraryData: LibraryResponseItem
+    private lateinit var viewModel: AddRegularStudentViewModel
+    private var selectedDateInMillis: Long? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRegularStudentBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this)[AddRegularStudentViewModel::class.java]
         setContentView(binding.root)
         window.statusBarColor = Color.WHITE
         val receivedIntent = intent
@@ -40,6 +49,9 @@ class AddRegularStudentActivity : AppCompatActivity() {
             finish()
         }
         focusChangeListeners()
+        observeProgress()
+        observerErrorMessageApiResponse()
+        observerApiResponse()
 
     }
 
@@ -144,12 +156,58 @@ class AddRegularStudentActivity : AppCompatActivity() {
             } else if (binding.chooseDate.text == "Choose Date") {
                 binding.requireDate.visibility = View.VISIBLE
             } else {
-                ToastUtil.makeToast(this, "DONE...")
+                val currentDateInMillis = Calendar.getInstance().timeInMillis
+                val noOfDays = if (selectedDateInMillis != null) {
+                    val diff = selectedDateInMillis!! - currentDateInMillis
+                    TimeUnit.MILLISECONDS.toDays(diff).toInt()
+                } else {
+                    0
+                }
+                callAddRegularStudentApi(
+                    AddStudentRequestBody(
+                        phoneNo.toLongOrNull(), libraryData.id, noOfDays.toString(), "", "00", "", "00"
+                    )
+                )
             }
         }
         binding.backButton.setOnClickListener {
             finish()
         }
+    }
+
+    private fun callAddRegularStudentApi(
+        addStudentRequestBody: AddStudentRequestBody?
+    ) {
+        viewModel.callAddRegularStudentApi(addStudentRequestBody)
+    }
+
+
+    private fun observeProgress() {
+        viewModel.showProgress.observe(this, Observer {
+            if (it) {
+                binding.progressBar.visibility = View.VISIBLE
+                binding.mainView.visibility = View.GONE
+            } else {
+                binding.progressBar.visibility = View.GONE
+                binding.mainView.visibility = View.VISIBLE
+            }
+        })
+
+    }
+
+    private fun observerErrorMessageApiResponse() {
+        viewModel.errorMessage.observe(this, Observer {
+            ToastUtil.makeToast(this, it)
+        })
+
+    }
+
+
+    private fun observerApiResponse() {
+        viewModel.addRegularStudentResponse.observe(this, Observer {
+            ToastUtil.makeToast(this, "Student Details Added")
+
+        })
     }
 
 
@@ -170,6 +228,7 @@ class AddRegularStudentActivity : AppCompatActivity() {
                     val formattedDate =
                         SimpleDateFormat("dd/MM/yyyy").format(selectedDateCalendar.time)
                     binding.chooseDate.text = formattedDate
+                    selectedDateInMillis = selectedDateCalendar.timeInMillis
                 } else {
                     // Show error message or handle the case when selected date is not a future date
                     // For example:
@@ -257,4 +316,22 @@ class AddRegularStudentActivity : AppCompatActivity() {
 
         return String.format("%02d:%02d %s", adjustedHours, minutes, amPm)
     }
+    fun convertTo24HourFormat(time: String): Int {
+        val timeParts = time.split(" ")
+        val timeComponent = timeParts[0]
+        val amPmComponent = timeParts[1]
+
+        val hourMinute = timeComponent.split(":")
+        var hour = hourMinute[0].toInt()
+        val minute = hourMinute[1].toInt()
+
+        if (amPmComponent.equals("PM", ignoreCase = true) && hour != 12) {
+            hour += 12
+        } else if (amPmComponent.equals("AM", ignoreCase = true) && hour == 12) {
+            hour = 0
+        }
+
+        return hour
+    }
+
 }

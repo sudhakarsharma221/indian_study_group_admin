@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_qr"
+        android:icon="@drawable/library_qr"
+        android:iconTint="@color/black_app"
+        android:title="Show QR" />
+    <item
+        android:id="@+id/action_info"
+        android:icon="@drawable/outline_info_24"
+        android:iconTint="@color/black_app"
+        android:title="Gym info" />
+
+</menu>

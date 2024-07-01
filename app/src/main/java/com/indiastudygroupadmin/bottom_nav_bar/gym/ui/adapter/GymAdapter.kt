@@ -133,8 +133,8 @@ class GymAdapter(
         filteredList = if (searchText.length < 1) {
             ArrayList(originalList)
         } else {
-            originalList.filter { library ->
-                library.name?.toLowerCase(Locale.getDefault())?.contains(searchText) == true
+            originalList.filter { gym ->
+                gym.name?.toLowerCase(Locale.getDefault())?.contains(searchText) == true
             } as ArrayList<GymResponseItem>
         }
         notifyDataSetChanged()
@@ -144,7 +144,7 @@ class GymAdapter(
         view: View, position: Int, gymId: String?, name: String?, id: String?
     ) {
         val popupMenu = PopupMenu(context, view)
-        popupMenu.menuInflater.inflate(R.menu.library_menu, popupMenu.menu)
+        popupMenu.menuInflater.inflate(R.menu.gym_menu, popupMenu.menu)
 
         popupMenu.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {

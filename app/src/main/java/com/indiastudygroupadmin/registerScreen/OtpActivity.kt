@@ -202,7 +202,7 @@ class OtpActivity : AppCompatActivity() {
 
     private fun observerUserDetailsApiResponse() {
         viewModel.userDetailsResponse.observe(this, Observer {
-
+            viewModel.setUserDetailsResponse(it)
             if (!it.devices.contains(fcmToken)) {
                 viewModel.callPostFcmToken(
                     auth.currentUser!!.uid, AddFcmTokenRequestBody(
@@ -303,6 +303,7 @@ class OtpActivity : AppCompatActivity() {
     private fun cancelCountdownTimer() {
         countdownTimer?.cancel()
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         finishAffinity()

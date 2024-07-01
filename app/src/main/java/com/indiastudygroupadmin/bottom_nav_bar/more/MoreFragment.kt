@@ -108,6 +108,10 @@ class MoreFragment : Fragment() {
             ToastUtil.makeToast(requireContext(), "Successful Sign Out")
             IntentUtil.startIntent(requireContext(), SignInActivity())
             ApiCallsConstant.apiCallsOnceHome = false
+            ApiCallsConstant.apiCallsOnceProfile = false
+            ApiCallsConstant.apiCallsOnceMore = false
+            ApiCallsConstant.apiCallsOnceLibrary = false
+            ApiCallsConstant.apiCallsOnceGym = false
             AppConstant.libraryList.clear()
             AppConstant.gymList.clear()
             requireActivity().finish()
