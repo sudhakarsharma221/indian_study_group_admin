@@ -2,6 +2,7 @@ package com.indiastudygroupadminapp.app_utils
 
 object ApiCallsConstant {
 
+
     var apiCallsOnceProfile = false
     var apiCallsOnceHome = false
     var apiCallsOnceMore = false
