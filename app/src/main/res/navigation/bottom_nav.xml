@@ -6,25 +6,25 @@
     app:startDestination="@id/navigation_library">
     <fragment
         android:id="@+id/navigation_library"
-        android:name="com.indiastudygroupadmin.bottom_nav_bar.library.ui.LibraryFragment"
+        android:name="com.indiastudygroupadminapp.bottom_nav_bar.library.ui.LibraryFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_schedule"
-        android:name="com.indiastudygroupadmin.bottom_nav_bar.attendance.ui.ScheduleFragment"
+        android:name="com.indiastudygroupadminapp.bottom_nav_bar.attendance.ui.ScheduleFragment"
         android:label="Schedule"
         tools:layout="@layout/fragment_schedule" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.indiastudygroupadmin.bottom_nav_bar.profile.ProfileFragment"
+        android:name="com.indiastudygroupadminapp.bottom_nav_bar.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_more"
-        android:name="com.indiastudygroupadmin.bottom_nav_bar.more.MoreFragment"
+        android:name="com.indiastudygroupadminapp.bottom_nav_bar.more.MoreFragment"
         android:label="More"
         tools:layout="@layout/fragment_more" />
 </navigation>

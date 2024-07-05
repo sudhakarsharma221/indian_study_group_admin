@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/detailsFillFragment"
-        android:name="com.indiastudygroupadmin.fillDetails.screens.DetailsFillFragment"
+        android:name="com.indiastudygroupadminapp.fillDetails.screens.DetailsFillFragment"
         android:label="fragment_details_fill"
         tools:layout="@layout/fragment_details_fill">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/photoFillFragment"
-        android:name="com.indiastudygroupadmin.fillDetails.screens.PhotoFillFragment"
+        android:name="com.indiastudygroupadminapp.fillDetails.screens.PhotoFillFragment"
         android:label="fragment_photo_fill"
         tools:layout="@layout/fragment_photo_fill">
 
@@ -44,7 +44,7 @@
     </fragment>
     <activity
         android:id="@+id/mainActivity"
-        android:name="com.indiastudygroupadmin.MainActivity"
+        android:name="com.indiastudygroupadminapp.MainActivity"
         android:label="activity_main"
         tools:layout="@layout/activity_main" />
 </navigation>

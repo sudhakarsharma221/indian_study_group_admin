@@ -130,7 +130,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.indiastudygroupadmin.fileProvider"
+            android:authorities="com.indiastudygroupadminapp.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -139,7 +139,7 @@
         </provider>
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.indiastudygroupadmin.libraryFileProvider"
+            android:authorities="com.indiastudygroupadminapp.libraryFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.indiastudygroupadmin"
+    namespace = "com.indiastudygroupadminapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.indiastudygroupadmin"
+        applicationId = "com.indiastudygroupadminapp"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
